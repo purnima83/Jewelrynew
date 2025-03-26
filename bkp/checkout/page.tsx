@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
-import Link from "next/link";
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
@@ -75,7 +74,7 @@ export default function CheckoutPage() {
 
       {cart.length === 0 ? (
         <p className="text-center text-gray-500">
-          Your cart is empty. <Link href="/shop" className="text-blue-500 underline">Shop Now</Link>
+          Your cart is empty. <a href="/shop" className="text-blue-500 underline">Shop Now</a>
         </p>
       ) : (
         <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
+import Image from "next/image";
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
@@ -74,7 +75,7 @@ export default function SuccessPage() {
           {Array.isArray(order.items) && order.items.length > 0 ? (
             order.items.map((item: any, index: number) => (
               <div key={index} className="border p-3 rounded-lg flex items-center">
-                <img src={item.image} alt={item.title} className="w-16 h-16 rounded" />
+                <Image src={item.image} alt={item.title} width={64} height={64} className="rounded" />
                 <div className="ml-4">
                   <h4 className="font-medium">{item.title}</h4>
                   <p className="text-sm text-gray-600">${item.price} x {item.quantity}</p>
