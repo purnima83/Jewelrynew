@@ -3,8 +3,12 @@ import Stripe from "stripe";
 import { connectToDatabase } from "@/lib/mongodb";
 import Order from "@/models/Order";
 
+//const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  //apiVersion: "2023-10-16",
+//});
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2023-10-16",
+  apiVersion: Stripe.API_VERSIONS.LATEST, // Automatically sets the correct version
 });
 
 export async function POST(req: Request) {
