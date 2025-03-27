@@ -18,16 +18,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
-      
-      // Ensure users always land on the correct domain
-      if (url.startsWith(baseUrl)) {
-        return url; // ✅ Allow only safe redirects
-      }
-      
-      return `${baseUrl}/profile`; // ✅ Default redirect after login
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/profile`;
     },
     async session({ session, token }) {
-      if (token) {
+      if (session.user) {
         session.user.id = token.sub || "";
       }
       return session;
@@ -40,7 +34,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/login", // ✅ Explicitly set sign-in page
+    signIn: "/login",
   },
-  debug: false, // ❌ Disable debug in production
+  debug: false,
 };
