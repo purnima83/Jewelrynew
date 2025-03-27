@@ -24,8 +24,23 @@ export const authOptions: NextAuthOptions = {
         return url; // ✅ Allow only safe redirects
       }
       
-      return `${baseUrl}/profile`; // ✅ Redirect to profile page after login
+      return `${baseUrl}/profile`; // ✅ Default redirect after login
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.sub || "";
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
     },
   },
-  debug: true, // ✅ Enable debugging logs in terminal
+  pages: {
+    signIn: "/login", // ✅ Explicitly set sign-in page
+  },
+  debug: false, // ❌ Disable debug in production
 };
