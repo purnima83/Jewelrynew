@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {  // ✅ Ensure proper typing
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
@@ -14,5 +14,5 @@ export const authOptions = {
       authorization: { params: { prompt: "select_account" } }, // ✅ Force account selection
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET, // ✅ Ensure NEXTAUTH_SECRET is set
 };
