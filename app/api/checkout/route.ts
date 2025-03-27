@@ -8,7 +8,7 @@ import Order from "@/models/Order";
 //});
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: Stripe.API_VERSIONS.LATEST, // Automatically sets the correct version
+  apiVersion: "2025-02-24.acacia", // Use the version DigitalOcean enforces
 });
 
 export async function POST(req: Request) {
