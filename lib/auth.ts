@@ -17,7 +17,9 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async redirect({ url, baseUrl }) {
-      return baseUrl; // ✅ Ensures Google redirects to correct URL
+      console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
+      return baseUrl; // ✅ Ensures redirect goes to your site
     },
   },
+  debug: true, // ✅ Enable debugging logs in terminal
 };
