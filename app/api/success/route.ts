@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Order from "@/models/Order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-02-24.acacia" as any, // ✅ Use the expected API version
 });
 
 export async function GET(req: Request) {
