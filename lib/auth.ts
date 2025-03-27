@@ -18,7 +18,13 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
-      return baseUrl; // ✅ Ensures redirect goes to your site
+      
+      // Ensure users always land on the correct domain
+      if (url.startsWith(baseUrl)) {
+        return url; // ✅ Allow only safe redirects
+      }
+      
+      return `${baseUrl}/profile`; // ✅ Redirect to profile page after login
     },
   },
   debug: true, // ✅ Enable debugging logs in terminal
