@@ -1,24 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 
-export default function SuccessPage() {
+function SuccessPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get("session_id");
   const { clearCart } = useCart();
-  const { data: session, status } = useSession(); // ✅ Use NextAuth session
-
+  const { data: session, status } = useSession();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Redirect unauthenticated users only when session is confirmed as unauthenticated
   useEffect(() => {
-    if (status === "loading") return; // Wait until session is determined
+    if (status === "loading") return;
     if (!session) {
       router.push("/login");
     }
@@ -35,7 +33,7 @@ export default function SuccessPage() {
           setOrder(null);
         } else {
           setOrder(data);
-          clearCart(); // ✅ Clear cart only after order is confirmed
+          clearCart();
         }
         setLoading(false);
       })
@@ -45,7 +43,7 @@ export default function SuccessPage() {
       });
   }, [sessionId, clearCart]);
 
-  if (status === "loading") return null; // ✅ Prevent hydration errors
+  if (status === "loading") return null;
 
   if (!sessionId) {
     return (
@@ -97,5 +95,13 @@ export default function SuccessPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<p>Loading payment details...</p>}>
+      <SuccessPageContent />
+    </Suspense>
   );
 }
