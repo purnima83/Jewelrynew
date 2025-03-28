@@ -18,6 +18,12 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
+
+      // Ensure redirect goes to profile instead of checkout
+      if (url === `${baseUrl}/checkout`) {
+        return `${baseUrl}/profile`;
+      }
+
       return url.startsWith(baseUrl) ? url : `${baseUrl}/profile`;
     },
     async session({ session, token }) {
@@ -36,5 +42,5 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
-  debug: false,
+  debug: true, // Keep this enabled for troubleshooting
 };
