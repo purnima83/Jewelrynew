@@ -45,11 +45,20 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : `${baseUrl}/profile`;
+      console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
+
+      // Ensure redirection stays within the correct domain
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      if (new URL(url).host === new URL(baseUrl).host) {
+        return url;
+      }
+      return `${baseUrl}/profile`; // ✅ Redirect to profile page after login
     },
   },
   pages: {
     signIn: "/login",
   },
-  debug: true,
+  debug: process.env.NEXTAUTH_DEBUG === "true",
 };
