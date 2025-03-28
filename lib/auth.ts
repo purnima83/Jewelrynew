@@ -1,6 +1,22 @@
 import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import { JWT } from "next-auth/jwt";
+
+declare module "next-auth" {
+  interface User {
+    id: string;
+  }
+
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -16,31 +32,24 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
-
-      // Ensure redirect goes to profile instead of checkout
-      if (url === `${baseUrl}/checkout`) {
-        return `${baseUrl}/profile`;
-      }
-
-      return url.startsWith(baseUrl) ? url : `${baseUrl}/profile`;
-    },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub || "";
+      if (session.user && token.sub) {
+        session.user.id = token.sub; // ✅ Assign `id` safely
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
+        token.sub = user.id; // ✅ Ensure token has `sub` for user ID
       }
       return token;
+    },
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/profile`;
     },
   },
   pages: {
     signIn: "/login",
   },
-  debug: true, // Keep this enabled for troubleshooting
+  debug: true,
 };
