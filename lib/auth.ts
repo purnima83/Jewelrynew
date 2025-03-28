@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
-        session.user.id = token.sub; // ✅ Assign `id` safely
+        session.user.id = token.sub; // ✅ Assign user ID from token safely
       }
       return session;
     },
@@ -44,17 +44,9 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async redirect({ url, baseUrl }) {
-      console.log("🔄 Redirecting to:", url, "Base URL:", baseUrl);
-
-      // Ensure redirection stays within the correct domain
-      if (url.startsWith("/")) {
-        return `${baseUrl}${url}`;
-      }
-      if (new URL(url).host === new URL(baseUrl).host) {
-        return url;
-      }
-      return `${baseUrl}/profile`; // ✅ Redirect to profile page after login
+    async redirect({ url }) {
+      console.log("🔄 Redirecting to:", url);
+      return url; // ✅ Allow direct redirection without modifying base URL
     },
   },
   pages: {
