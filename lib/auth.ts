@@ -1,22 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import { JWT } from "next-auth/jwt";
-
-declare module "next-auth" {
-  interface User {
-    id: string;
-  }
-
-  interface Session {
-    user: {
-      id: string;
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-    };
-  }
-}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -31,22 +15,25 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
-        session.user.id = token.sub; // ✅ Assign user ID from token safely
+        session.user.id = token.sub;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id; // ✅ Ensure token has `sub` for user ID
+        token.sub = user.id;
       }
       return token;
     },
     async redirect({ url }) {
       console.log("🔄 Redirecting to:", url);
-      return url; // ✅ Allow direct redirection without modifying base URL
+      return url; // Direct redirection without modifying base URL
     },
   },
   pages: {
