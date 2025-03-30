@@ -76,7 +76,11 @@ export default function Navbar() {
               </>
             ) : (
               <button
-                onClick={() => signIn()}
+                onClick={() =>
+                  signIn("google", {
+                    callbackUrl: "https://jewelry-app-ykwrn.ondigitalocean.app/profile",
+                  })
+                }
                 className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 w-full text-center"
               >
                 Login

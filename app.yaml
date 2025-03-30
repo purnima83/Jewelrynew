@@ -1,0 +1,27 @@
+runtime: nodejs20
+env: standard
+instance_class: F1
+
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 10
+
+entrypoint: npm run start
+
+handlers:
+  - url: /_next/static
+    static_dir: .next/static
+
+  - url: /.*  
+    script: auto  
+    secure: always
+
+# ✅ Load environment variables from Google Secret Manager
+env_variables:
+  NEXT_PUBLIC_URL: "https://jewelryecomapp.com"
+  NEXTAUTH_SECRET: "{{ gcloud:secrets:NEXTAUTH_SECRET }}"
+  NEXTAUTH_URL: "https://jewelryecomapp.com"
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "{{ gcloud:secrets:NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}"
+  STRIPE_SECRET_KEY: "{{ gcloud:secrets:STRIPE_SECRET_KEY }}"  # ✅ Ensure this is correctly set
+  MONGODB_URI: "{{ gcloud:secrets:MONGODB_URI }}"

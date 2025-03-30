@@ -3,12 +3,10 @@ import Stripe from "stripe";
 import { connectToDatabase } from "@/lib/mongodb";
 import Order from "@/models/Order";
 
-//const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  //apiVersion: "2023-10-16",
-//});
+console.log("Stripe Secret Key:", process.env.STRIPE_SECRET_KEY); // Add this line
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2025-02-24.acacia", // Use the version DigitalOcean enforces
+  apiVersion: "2025-02-24.acacia", // Use the API version that your types expect.
 });
 
 export async function POST(req: Request) {
