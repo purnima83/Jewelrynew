@@ -8,7 +8,11 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { cart } = useCart();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return null; // Optionally return a loading spinner
+  }
 
   return (
     <nav className="bg-white shadow-md">
@@ -62,11 +66,9 @@ export default function Navbar() {
           <li className="flex items-center px-6 py-3">
             {session ? (
               <>
-                {/* ✅ Profile Link */}
                 <Link href="/profile" className="text-gray-800 font-semibold hover:underline">
                   Profile 👤
                 </Link>
-
                 <button
                   onClick={() => signOut()}
                   className="ml-3 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -76,11 +78,13 @@ export default function Navbar() {
               </>
             ) : (
               <button
-                onClick={() =>
-                  signIn("google", {
-                    callbackUrl: "https://jewelry-app-ykwrn.ondigitalocean.app/profile",
-                  })
-                }
+                onClick={() => {
+                  const callbackUrl =
+                    typeof window !== "undefined"
+                      ? `${window.location.origin}/checkout`
+                      : "/checkout";
+                  signIn("google", { callbackUrl });
+                }}
                 className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 w-full text-center"
               >
                 Login

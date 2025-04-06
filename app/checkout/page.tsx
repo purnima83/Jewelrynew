@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "../../context/CartContext";
 import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState(session?.user?.email || "");
+  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,14 +22,23 @@ export default function CheckoutPage() {
     }
   }, [session]);
 
-  // Redirect if not logged in
+  // 🔄 Handle loading state while session is being fetched
+  if (status === "loading") {
+    return (
+      <div className="container mx-auto px-6 py-8 text-center">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  // 🚫 Not signed in
   if (!session) {
     return (
       <div className="container mx-auto px-6 py-8 text-center">
         <h2 className="text-2xl font-bold mb-4">Please Sign In</h2>
         <p className="text-gray-600">You must be signed in to continue.</p>
         <button
-          onClick={() => signIn()}
+          onClick={() => signIn(undefined, { callbackUrl: "/checkout" })}
           className="mt-4 bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
         >
           Sign In to Continue
@@ -75,7 +84,10 @@ export default function CheckoutPage() {
 
       {cart.length === 0 ? (
         <p className="text-center text-gray-500">
-          Your cart is empty. <Link href="/shop" className="text-blue-500 underline">Shop Now</Link>
+          Your cart is empty.{" "}
+          <Link href="/shop" className="text-blue-500 underline">
+            Shop Now
+          </Link>
         </p>
       ) : (
         <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
