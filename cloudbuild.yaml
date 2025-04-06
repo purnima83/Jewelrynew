@@ -1,0 +1,6 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest', '.']
+
+images:
+  - 'gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest'
