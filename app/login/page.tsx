@@ -1,20 +1,18 @@
 "use client";
 
+import { Suspense, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
-import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginInner() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Get the callback URL or default to home page
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   useEffect(() => {
     if (status === "authenticated") {
-      // Redirect back if already signed in
       router.replace(callbackUrl);
     }
   }, [status, callbackUrl, router]);
@@ -40,5 +38,13 @@ export default function LoginPage() {
         Sign in with Google
       </button>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-8">Loading login page...</div>}>
+      <LoginInner />
+    </Suspense>
   );
 }
