@@ -1,0 +1,31 @@
+name: Deploy to GCE VM
+
+on:
+  push:
+    branches:
+      - main  # or 'master' or your deploy branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "${{ secrets.GCE_VM_HOST }}" > ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ secrets.GCE_VM_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy Docker container to VM
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.GCE_VM_USER }}@${{ secrets.GCE_VM_HOST }} << 'EOF'
+          sudo docker pull gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
+          sudo docker stop $(sudo docker ps -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
+          sudo docker rm $(sudo docker ps -a -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
+          sudo docker run -d -p 80:3000 gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
+        EOF
