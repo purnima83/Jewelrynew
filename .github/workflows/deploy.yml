@@ -3,7 +3,7 @@ name: Deploy to GCE VM
 on:
   push:
     branches:
-      - main  # or 'master' or your deploy branch
+      - main
 
 jobs:
   deploy:
@@ -18,7 +18,6 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        echo "${{ secrets.GCE_VM_HOST }}" > ~/.ssh/known_hosts
         ssh-keyscan -H ${{ secrets.GCE_VM_HOST }} >> ~/.ssh/known_hosts
 
     - name: Deploy Docker container to VM
