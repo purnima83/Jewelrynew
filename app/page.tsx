@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useCart } from "@/context/CartContext"; // ✅ Import Cart Context
+import { useCart } from "@/context/CartContext"; // ✅ Cart context
+import { useRouter } from "next/navigation"; // ✅ Router for navigation
 
 interface Product {
   id: number;
@@ -13,7 +14,8 @@ interface Product {
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
-  const { addToCart } = useCart(); // ✅ Get addToCart function
+  const { addToCart, cart } = useCart(); // ✅ Access cart too
+  const router = useRouter(); // ✅ Initialize router
 
   useEffect(() => {
     fetch("https://fakestoreapi.com/products/category/jewelery")
@@ -42,9 +44,9 @@ export default function Home() {
               <h3 className="text-lg font-semibold mt-3 text-center">{product.title}</h3>
               <p className="text-gray-700 text-center">${product.price}</p>
 
-              {/* ✅ Fix: Add to Cart Button with correct product structure */}
+              {/* ✅ Add to Cart */}
               <button 
-                onClick={() => addToCart({ ...product, quantity: 1 })} // Ensure quantity is set
+                onClick={() => addToCart({ ...product, quantity: 1 })}
                 className="mt-3 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
               >
                 Add to Cart 🛒
@@ -52,6 +54,18 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* ✅ Proceed to Checkout Button */}
+        {cart.length > 0 && (
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => router.push("/checkout")}
+              className="bg-black text-white px-6 py-3 rounded text-lg hover:bg-gray-800 transition"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
