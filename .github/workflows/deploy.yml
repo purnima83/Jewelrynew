@@ -13,9 +13,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Log in to Google Container Registry
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin gcr.io
+      # ✅ Authenticate with Google Cloud using a service account key stored in GitHub Secrets
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
+      # ✅ Configure Docker to use gcloud as a credential helper
+      - name: Configure Docker to use gcloud
+        run: gcloud auth configure-docker --quiet
+
+      # ✅ Build Docker image using build args from secrets
       - name: Build Docker image with build args
         run: |
           docker build \
@@ -26,5 +34,6 @@ jobs:
             --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
             -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
 
+      # ✅ Push to Google Container Registry
       - name: Push Docker image to GCR
         run: docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
