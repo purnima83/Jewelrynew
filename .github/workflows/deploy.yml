@@ -3,7 +3,7 @@ name: Deploy to GCE VM
 on:
   push:
     branches:
-      - main
+      - main  # Trigger deployment only on push to main
 
 jobs:
   deploy:
@@ -23,8 +23,8 @@ jobs:
     - name: Deploy Docker container to VM
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.GCE_VM_USER }}@${{ secrets.GCE_VM_HOST }} << 'EOF'
-          sudo docker pull gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
-          sudo docker stop $(sudo docker ps -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
-          sudo docker rm $(sudo docker ps -a -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
-          sudo docker run -d -p 80:3000 gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
+          docker pull gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
+          docker stop $(docker ps -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
+          docker rm $(docker ps -a -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
+          docker run -d -p 80:3000 gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
         EOF
