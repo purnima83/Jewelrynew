@@ -1,4 +1,4 @@
-name: Build & Deploy to GCE VM
+name: Deploy to Google Container Registry
 
 on:
   push:
@@ -6,42 +6,25 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Google Cloud CLI
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+      - name: Log in to Google Container Registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin gcr.io
 
-    - name: Configure Docker for GCR
-      run: |
-        gcloud auth configure-docker
+      - name: Build Docker image with build args
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }} \
+            --build-arg STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} \
+            --build-arg NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }} \
+            --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
+            --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
+            -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
 
-    - name: Build Docker image
-      run: |
-        docker build -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
-
-    - name: Push Docker image to GCR
-      run: |
-        docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
-
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.GCE_VM_HOST }} >> ~/.ssh/known_hosts
-
-    - name: Deploy Docker container to VM
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.GCE_VM_USER }}@${{ secrets.GCE_VM_HOST }} << 'EOF'
-          docker pull gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
-          docker stop $(docker ps -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
-          docker rm $(docker ps -a -q --filter ancestor=gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce) || true
-          docker run -d -p 80:3000 gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
-        EOF
+      - name: Push Docker image to GCR
+        run: docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
