@@ -10,30 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Step 1: Checkout the source code
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # ✅ Authenticate to Google Cloud using service account key
+      # ✅ Step 2: Authenticate with Google Cloud using service account
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # ✅ Configure Docker to use gcloud
+      # ✅ Step 3: Configure Docker to use gcloud
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker --quiet
 
-      # ✅ Build Docker image using build args
+      # ✅ Step 4: Build Docker image using build arguments
       - name: Build Docker image with build args
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }} \
-            --build-arg STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} \
-            --build-arg NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }} \
-            --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
-            --build-arg MONGODB_URI=${{ secrets.MONGODB_URI }} \
-            -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
+            --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" \
+            --build-arg STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
+            --build-arg NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
+            --build-arg NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
+            --build-arg MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+            -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest \
+            .
 
-      # ✅ Push image to Google Container Registry
+      # ✅ Step 5: Push image to Google Container Registry
       - name: Push Docker image to GCR
         run: docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
