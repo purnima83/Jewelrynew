@@ -50,7 +50,7 @@ jobs:
             docker pull gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
             docker stop jewelry-ecommerce || true
             docker rm jewelry-ecommerce || true
-            docker run -d --name jewelry-ecommerce -p 80:8080 \
+            docker run -d --name jewelry-ecommerce -p 8080:8080 \
               -e NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" \
               -e STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
               -e NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
