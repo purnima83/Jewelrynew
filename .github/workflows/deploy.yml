@@ -33,9 +33,10 @@ jobs:
             --build-arg NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
             --build-arg NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
             --build-arg MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+            --build-arg NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
             -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
 
-      # ✅ Step 5: Push image to Google Container Registry
+      # ✅ Step 5: Push Docker image to Google Container Registry
       - name: Push Docker image to GCR
         run: docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
 
@@ -56,4 +57,5 @@ jobs:
               -e NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
               -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
               -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+              -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
               gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
