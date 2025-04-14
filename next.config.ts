@@ -2,10 +2,17 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["fakestoreapi.com", "res.cloudinary.com", "images.unsplash.com"],
+    domains: ["res.cloudinary.com", "images.unsplash.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fakestoreapi.com",
+        pathname: "/img/**",
+      },
+    ],
   },
   experimental: {
-    serverActions: { enable: true }, // ✅ Corrected syntax
+    serverActions: { enable: true },
   },
   async headers() {
     return [
@@ -28,7 +35,7 @@ const nextConfig = {
   },
 };
 
-// ✅ Debugging logs to verify environment variables are loaded
+// ✅ Debugging logs
 console.log("✅ NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL || "Not Found");
 console.log("✅ NEXTAUTH_URL:", process.env.NEXTAUTH_URL || "Not Found");
 console.log(
