@@ -34,6 +34,10 @@ jobs:
             --build-arg NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
             --build-arg MONGODB_URI="${{ secrets.MONGODB_URI }}" \
             --build-arg NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+            --build-arg GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            --build-arg GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            --build-arg GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}" \
+            --build-arg GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
             -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
 
       # ✅ Step 5: Push Docker image to Google Container Registry
@@ -58,4 +62,8 @@ jobs:
               -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
               -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
               -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+              -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              -e GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}" \
+              -e GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
               gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
