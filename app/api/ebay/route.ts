@@ -1,23 +1,15 @@
-// /app/api/ebay/route.ts
-
 import { NextResponse } from "next/server";
 import { readSavedApplicationToken, getApplicationAccessToken } from "@/utils/ebayAppToken.mjs";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q") || "jewelry";
   const limit = searchParams.get("limit") || "20";
 
-  const token = readSavedApplicationToken();
+  let token = readSavedApplicationToken();
 
   const fetchEbay = async (accessToken: string) => {
-    const query = new URLSearchParams({
-      category_ids: "4196",           // ✅ Fine Jewelry only (no tools)
-      limit,
-      filter: "price:[300..]",         // ✅ Only expensive jewelry
-      sort: "price desc",              // ✅ Sort expensive first
-    });
-
-    const res = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?${query.toString()}`, {
+    const res = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(q)}&limit=${limit}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -26,11 +18,17 @@ export async function GET(req: Request) {
     return res;
   };
 
+  // ✅ If no saved token, immediately fetch a new one
+  if (!token) {
+    console.warn("⚠️ No token found, fetching new one...");
+    token = await getApplicationAccessToken();
+  }
+
   let res = await fetchEbay(token);
   let data = await res.json();
 
   if (res.status === 401) {
-    console.warn("⚠ Token expired, refreshing...");
+    console.warn("⚠️ Token expired, refreshing...");
     const newToken = await getApplicationAccessToken();
     res = await fetchEbay(newToken);
     data = await res.json();
