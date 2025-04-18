@@ -8,8 +8,9 @@ export async function GET(req: Request) {
 
   let token = readSavedApplicationToken();
 
+  // Helper function
   const fetchEbay = async (accessToken: string) => {
-    const res = await fetch(
+    return await fetch(
       `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(q)}&limit=${limit}`,
       {
         headers: {
@@ -18,21 +19,29 @@ export async function GET(req: Request) {
         },
       }
     );
-    return res;
   };
 
-  // ✅ Check if token is missing BEFORE using it
+  // ✅ VERY IMPORTANT: Check token before calling fetchEbay
   if (!token) {
     console.warn("⚠️ No token found, fetching new one...");
     token = await getApplicationAccessToken();
   }
 
-  let res = await fetchEbay(token);
+  if (!token) {
+    console.error("❌ Failed to retrieve eBay token.");
+    return NextResponse.json({ error: "eBay token unavailable" }, { status: 500 });
+  }
+
+  let res = await fetchEbay(token); // ✅ SAFE because token is guaranteed string
   let data = await res.json();
 
   if (res.status === 401) {
     console.warn("⚠️ Token expired, refreshing...");
     const newToken = await getApplicationAccessToken();
+    if (!newToken) {
+      console.error("❌ Failed to refresh eBay token.");
+      return NextResponse.json({ error: "eBay token refresh failed" }, { status: 500 });
+    }
     res = await fetchEbay(newToken);
     data = await res.json();
   }
