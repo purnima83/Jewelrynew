@@ -9,16 +9,19 @@ export async function GET(req: Request) {
   let token = readSavedApplicationToken();
 
   const fetchEbay = async (accessToken: string) => {
-    const res = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(q)}&limit=${limit}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(q)}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return res;
   };
 
-  // ✅ If no saved token, immediately fetch a new one
+  // ✅ Check if token is missing BEFORE using it
   if (!token) {
     console.warn("⚠️ No token found, fetching new one...");
     token = await getApplicationAccessToken();
