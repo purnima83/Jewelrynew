@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const limit = searchParams.get("limit") || "20";
 
-  let token = readSavedApplicationToken();
+  const token = readSavedApplicationToken();
 
   const fetchEbay = async (accessToken: string) => {
     const query = new URLSearchParams({
