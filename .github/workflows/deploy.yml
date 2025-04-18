@@ -10,21 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Step 1: Checkout the source code
+      # ✅ Step 1: Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # ✅ Step 2: Authenticate with Google Cloud using service account
+      # ✅ Step 2: Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # ✅ Step 3: Configure Docker to use gcloud credentials
+      # ✅ Step 3: Configure Docker
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet
 
-      # ✅ Step 4: Build Docker image with secrets as build args
+      # ✅ Step 4: Build Docker image with build-time secrets
       - name: Build Docker image
         run: |
           docker build \
@@ -32,19 +32,21 @@ jobs:
             --build-arg STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
             --build-arg NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
             --build-arg NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
-            --build-arg MONGODB_URI="${{ secrets.MONGODB_URI }}" \
             --build-arg NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+            --build-arg MONGODB_URI="${{ secrets.MONGODB_URI }}" \
             --build-arg GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
             --build-arg GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
             --build-arg GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}" \
             --build-arg GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
+            --build-arg EBAY_CLIENT_ID="${{ secrets.EBAY_CLIENT_ID }}" \
+            --build-arg EBAY_CLIENT_SECRET="${{ secrets.EBAY_CLIENT_SECRET }}" \
             -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
 
-      # ✅ Step 5: Push Docker image to Google Container Registry
+      # ✅ Step 5: Push image to Google Container Registry
       - name: Push Docker image to GCR
         run: docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
 
-      # ✅ Step 6: Deploy on GCE VM over SSH
+      # ✅ Step 6: SSH into VM and deploy
       - name: SSH and deploy to Compute Engine VM
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -60,10 +62,12 @@ jobs:
               -e STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
               -e NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
               -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
-              -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
               -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+              -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
               -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
               -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
               -e GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}" \
               -e GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
+              -e EBAY_CLIENT_ID="${{ secrets.EBAY_CLIENT_ID }}" \
+              -e EBAY_CLIENT_SECRET="${{ secrets.EBAY_CLIENT_SECRET }}" \
               gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
