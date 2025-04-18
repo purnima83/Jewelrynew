@@ -43,15 +43,27 @@ export default function ProductDetail() {
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="flex flex-col md:flex-row items-center">
-        <Image src={product.image} alt={product.title} width={300} height={300} className="rounded-lg" />
+        <Image
+          src={product.image}
+          alt={product.title}
+          width={300}
+          height={300}
+          className="rounded-lg"
+        />
         <div className="ml-8">
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <p className="text-gray-700 mt-2">{product.description}</p>
           <p className="text-xl font-semibold mt-4">${product.price}</p>
 
-          {/* ✅ Fix: Ensure correct product structure when adding to cart */}
+          {/* ✅ Fix: Cast id to string when adding to cart */}
           <button
-            onClick={() => addToCart({ ...product, quantity: 1 })}
+            onClick={() =>
+              addToCart({
+                ...product,
+                id: String(product.id), // ✅ Important fix here
+                quantity: 1,
+              })
+            }
             className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
           >
             Add to Cart 🛒
