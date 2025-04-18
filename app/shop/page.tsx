@@ -1,7 +1,7 @@
-// app/shop/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import { useCart } from "@/context/CartContext"; // ✅ import useCart
 import ProductCard from "@/components/ProductCard";
 
 interface Product {
@@ -14,6 +14,7 @@ interface Product {
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart(); // ✅ get addToCart from context
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -46,7 +47,11 @@ export default function ShopPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} addToCart={() => {}} />
+            <ProductCard
+              key={product.id}
+              product={{ ...product, quantity: 1 }} // ✅ inject quantity: 1
+              addToCart={addToCart} // ✅ real addToCart
+            />
           ))}
         </div>
       )}
