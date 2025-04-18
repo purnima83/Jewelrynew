@@ -7,19 +7,13 @@ import ProductCard from "@/components/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
-interface RawProduct {
-  id: string | number;    // ← data from API might have number or string id
-  title: string;
-  price: number | string; // ← API might return string sometimes
-  image: string;
-}
+import { Product } from "@/types/product"; // ✅ Centralized Product type
 
-interface Product {
-  id: string;
+interface RawProduct {
+  id: string | number;
   title: string;
-  price: number;
+  price: string | number;
   image: string;
-  quantity: number;
 }
 
 export default function Home() {
@@ -53,11 +47,11 @@ export default function Home() {
 
       if (Array.isArray(data)) {
         const updatedProducts: Product[] = data.map((item) => ({
-          id: String(item.id),          // always string
+          id: String(item.id),
           title: item.title,
-          price: Number(item.price),     // always number
+          price: Number(item.price),
           image: item.image,
-          quantity: 1,                   // always 1
+          quantity: 1,
         }));
         setProducts(updatedProducts);
       } else {

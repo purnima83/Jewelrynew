@@ -2,14 +2,7 @@
 
 import Image from "next/image";
 import { FC } from "react";
-
-interface Product {
-  id: string;         // ✅ always string (good)
-  title: string;
-  price: number | string; // ✅ Accept number or string (to fix dynamic cases)
-  image: string;
-  quantity: number;
-}
+import { Product } from "@/types/product"; // ✅ Import the shared Product type
 
 interface ProductCardProps {
   product: Product;
@@ -29,8 +22,8 @@ const ProductCard: FC<ProductCardProps> = ({ product, addToCart }) => {
       <h3 className="text-lg font-bold mt-2 text-center">{product.title}</h3>
       <p className="text-gray-700 text-center">
         ${Number(product.price).toFixed(2)}
-      </p> {/* ✅ Safely handle price even if it's a string */}
-      
+      </p>
+
       <button
         onClick={() => addToCart(product)}
         className="block mt-4 mx-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
