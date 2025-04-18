@@ -1,10 +1,12 @@
 import Image from "next/image";
+import { FC } from "react";
 
 interface Product {
-  id: string; // ✅ id is string now
+  id: string;         // ✅ always string
   title: string;
   price: number;
   image: string;
+  quantity: number;
 }
 
 interface ProductCardProps {
@@ -12,34 +14,27 @@ interface ProductCardProps {
   addToCart: (product: Product) => void;
 }
 
-export default function ProductCard({ product, addToCart }: ProductCardProps) {
+const ProductCard: FC<ProductCardProps> = ({ product, addToCart }) => {
   return (
-    <div className="border rounded-lg shadow-md hover:shadow-xl transition p-4 flex flex-col items-center">
-      <div className="w-full h-48 overflow-hidden rounded">
-        <Image
-          src={product.image}
-          alt={product.title}
-          width={300}
-          height={300}
-          className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-          unoptimized
-        />
-      </div>
-      <h3 className="text-center text-lg font-semibold mt-3">{product.title}</h3>
-      <p className="text-center text-gray-700 mb-2">${product.price}</p>
-
-      <div className="flex items-center mb-2">
-        {Array.from({ length: 5 }, (_, i) => (
-          <span key={i} className="text-yellow-400">★</span>
-        ))}
-      </div>
+    <div className="border rounded-lg p-4 shadow hover:shadow-lg transition">
+      <Image
+        src={product.image}
+        alt={product.title}
+        width={300}
+        height={300}
+        className="object-cover mx-auto rounded"
+      />
+      <h3 className="text-lg font-bold mt-2 text-center">{product.title}</h3>
+      <p className="text-gray-700 text-center">${product.price.toFixed(2)}</p>
 
       <button
-        onClick={() => addToCart({ ...product, quantity: 1 })}
-        className="mt-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full"
+        onClick={() => addToCart(product)}
+        className="block mt-4 mx-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
-        Add to Cart 🛒
+        Add to Cart
       </button>
     </div>
   );
-}
+};
+
+export default ProductCard;
