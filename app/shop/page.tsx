@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCart } from "@/context/CartContext"; // ✅ import useCart
+import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 
 interface Product {
@@ -14,7 +14,7 @@ interface Product {
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // ✅ get addToCart from context
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -49,8 +49,12 @@ export default function ShopPage() {
           {products.map((product) => (
             <ProductCard
               key={product.id}
-              product={{ ...product, quantity: 1 }} // ✅ inject quantity: 1
-              addToCart={addToCart} // ✅ real addToCart
+              product={{
+                ...product,
+                id: String(product.id), // 🛠 CAST id to string here!
+                quantity: 1,            // 🛠 Add quantity field
+              }}
+              addToCart={addToCart}
             />
           ))}
         </div>
