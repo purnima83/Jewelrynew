@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 interface Product {
-  id: number;
+  id: string;
   title: string;
   price: number;
   image: string;
@@ -12,6 +12,7 @@ interface Product {
 
 interface CartContextType {
   cart: Product[];
+  mounted: boolean;
   addToCart: (product: Product) => void;
   removeFromCart: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
@@ -22,21 +23,21 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Product[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-  // ✅ Load cart from localStorage when the app starts
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
+    setMounted(true); // ✅ mark as ready after client-side load
   }, []);
 
-  // ✅ Save cart to localStorage whenever it changes
   useEffect(() => {
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
     } else {
-      localStorage.removeItem("cart"); // Clear if cart is empty
+      localStorage.removeItem("cart");
     }
   }, [cart]);
 
@@ -66,12 +67,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const clearCart = () => {
-    setCart([]); // ✅ Empty the cart
-    localStorage.removeItem("cart"); // ✅ Remove cart from localStorage
+    setCart([]);
+    localStorage.removeItem("cart");
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
+    <CartContext.Provider
+      value={{ cart, mounted, addToCart, removeFromCart, updateQuantity, clearCart }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -1,22 +1,23 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, models, model } from "mongoose";
 
-const OrderSchema = new mongoose.Schema({
-  userEmail: { type: String, required: true }, 
+const OrderSchema = new Schema({
+  userEmail: { type: String, required: true },
   items: [
     {
-      id: Number,
-      title: String,
-      price: Number,
-      image: String,
-      quantity: Number,
+      id: { type: String, required: true },  // ✅ id is String
+      title: { type: String, required: true },
+      price: { type: Number, required: true },
+      image: { type: String, required: true },
+      quantity: { type: Number, required: true },
     }
   ],
-  total: Number,
+  total: { type: Number, required: true },
   status: { type: String, enum: ["pending", "completed"], default: "pending" },
-  sessionId: { type: String, required: true },  // ✅ Add sessionId field
+  sessionId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
-const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+// ✅ Correct dynamic model creation
+const Order = models?.Order || model("Order", OrderSchema);
 
 export default Order;
