@@ -1,15 +1,15 @@
 "use client";
 
-import { useCart } from "../../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // ✅ Next.js router
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity } = useCart();
-  const router = useRouter(); // ✅ Initialize router
+  const router = useRouter();
 
-  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce((total, item) => total + Number(item.price) * item.quantity, 0);
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -37,7 +37,7 @@ export default function CartPage() {
                 />
                 <h3 className="mt-2 text-lg font-semibold text-center">{product.title}</h3>
                 <p className="text-gray-700 text-center">
-                  ${product.price} x {product.quantity}
+                  ${Number(product.price).toFixed(2)} x {product.quantity}
                 </p>
 
                 {/* Quantity Controls */}
