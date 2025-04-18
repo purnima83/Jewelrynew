@@ -8,10 +8,11 @@ import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
 interface Product {
-  id: number;
+  id: string;       // ✅ string id (not number)
   title: string;
   price: number;
   image: string;
+  quantity: number; // ✅ add quantity field
 }
 
 export default function Home() {
@@ -40,11 +41,18 @@ export default function Home() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/ebay?limit=6"); // Reduced to 6 for better luxury feeling
+      const res = await fetch("/api/ebay?limit=6"); 
       const data = await res.json();
 
       if (Array.isArray(data)) {
-        setProducts(data);
+        const updatedProducts = data.map((item: any) => ({
+          id: String(item.id),        // ✅ ensure id is string
+          title: item.title,
+          price: item.price,
+          image: item.image,
+          quantity: 1,                 // ✅ always initialize quantity
+        }));
+        setProducts(updatedProducts);
       } else {
         console.warn("⚠️ Unexpected response:", data);
         setProducts([]);
