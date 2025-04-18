@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
+import Confetti from "react-confetti";
+import { useWindowSize } from "react-use";
 
 function SuccessPageContent() {
   const searchParams = useSearchParams();
@@ -14,6 +16,7 @@ function SuccessPageContent() {
   const { data: session, status } = useSession();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { width, height } = useWindowSize();
 
   useEffect(() => {
     if (status === "loading") return;
@@ -49,8 +52,11 @@ function SuccessPageContent() {
     return (
       <div className="text-center py-10">
         <h1 className="text-3xl font-bold text-red-600">No Order Found</h1>
-        <p className="text-gray-700 mt-4">It looks like you haven't placed an order.</p>
-        <a href="/" className="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+        <p className="text-gray-400 mt-4">It looks like you haven't placed an order.</p>
+        <a
+          href="/"
+          className="mt-6 inline-block bg-gold-500 text-black px-6 py-2 rounded hover:bg-yellow-400 transition"
+        >
           Continue Shopping
         </a>
       </div>
@@ -58,39 +64,63 @@ function SuccessPageContent() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8">
-      <h2 className="text-3xl font-bold text-center text-green-600 mb-6">Payment Successful 🎉</h2>
+    <div className="relative container mx-auto px-6 py-8">
+      {/* 🎉 Confetti */}
+      <Confetti width={width} height={height} numberOfPieces={300} recycle={false} />
+
+      <h2 className="text-4xl font-bold text-center text-green-400 mb-8">Payment Successful 🎉</h2>
 
       {loading ? (
-        <p className="text-center">Loading order details...</p>
+        <p className="text-center text-gray-400">Loading order details...</p>
       ) : !order ? (
         <p className="text-center text-red-500">🚨 Order not found. Please check your email for confirmation.</p>
       ) : (
-        <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-2">Order Summary</h3>
-          <p className="text-gray-600 mb-4">Order ID: {order._id}</p>
+        <div className="max-w-2xl mx-auto bg-black/50 p-8 rounded-lg shadow-lg">
+          <h3 className="text-2xl font-semibold mb-4 text-gold-500">Order Summary</h3>
+          <p className="text-gray-400 mb-6">Order ID: {order._id}</p>
 
-          {Array.isArray(order.items) && order.items.length > 0 ? (
-            order.items.map((item: any, index: number) => (
-              <div key={index} className="border p-3 rounded-lg flex items-center">
-                <Image src={item.image} alt={item.title} width={64} height={64} className="rounded" />
-                <div className="ml-4">
+          {/* Ordered Items */}
+          <div className="space-y-4">
+            {order.items.map((item: any, index: number) => (
+              <div
+                key={index}
+                className="flex items-center gap-4 border border-gold-500 p-4 rounded-lg bg-black/40"
+              >
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={80}
+                    height={80}
+                    className="rounded object-cover"
+                  />
+                </div>
+                <div className="flex-1">
                   <h4 className="font-medium">{item.title}</h4>
-                  <p className="text-sm text-gray-600">${item.price} x {item.quantity}</p>
+                  <p className="text-sm text-gray-400">${item.price} x {item.quantity}</p>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No items found in order.</p>
-          )}
+            ))}
+          </div>
 
-          <p className="text-lg font-bold mt-4">Total: ${order.total?.toFixed(2)}</p>
-          <p className="text-green-600 font-semibold mt-2">Payment Status: Paid</p>
+          {/* Total & Status */}
+          <div className="mt-6 border-t pt-4">
+            <p className="text-xl font-bold text-white">
+              Total: ${order.total?.toFixed(2)}
+            </p>
+            <p className="text-green-400 font-semibold mt-2">
+              Payment Status: Paid ✅
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="text-center mt-6">
-        <a href="/" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+      {/* Continue Shopping */}
+      <div className="text-center mt-8">
+        <a
+          href="/"
+          className="bg-gold-500 text-black px-6 py-3 rounded hover:bg-yellow-400 transition text-lg font-semibold"
+        >
           Continue Shopping
         </a>
       </div>
@@ -100,7 +130,7 @@ function SuccessPageContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<p>Loading payment details...</p>}>
+    <Suspense fallback={<p className="text-center text-gray-400 py-8">Loading payment details...</p>}>
       <SuccessPageContent />
     </Suspense>
   );

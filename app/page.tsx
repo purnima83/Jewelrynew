@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import ProductCard from "@/components/ProductCard";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 interface Product {
   id: number;
@@ -14,73 +16,111 @@ interface Product {
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
-  const { addToCart, cart } = useCart();
+  const [loading, setLoading] = useState(false);
+  const { addToCart } = useCart();
   const router = useRouter();
 
+  const [sliderRef] = useKeenSlider<HTMLDivElement>({
+    loop: true,
+    mode: "free-snap",
+    slides: { perView: 1 },
+    renderMode: "performance",
+    defaultAnimation: { duration: 2000 },
+    created: (slider) => {
+      setInterval(() => {
+        slider.next();
+      }, 4000); // Auto-slide every 4s
+    },
+  });
+
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products/category/jewelery")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data);
-        console.log("✅ Products fetched:", data);
-      })
-      .catch((err) => console.error("❌ Fetch error:", err));
+    fetchProducts();
   }, []);
 
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/ebay?limit=6"); // Reduced to 6 for better luxury feeling
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        console.warn("⚠️ Unexpected response:", data);
+        setProducts([]);
+      }
+    } catch (err) {
+      console.error("❌ Error fetching products:", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center text-center">
       {/* Hero Section */}
       <section
-        className="relative h-64 flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: "url('/hero-image.jpg')" }}
+        className="relative w-full h-[95vh] flex items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: "url('/hero-jewelry.jpg')" }}
       >
-        <h1 className="text-white text-4xl font-bold">Discover Elegant Jewelry</h1>
+        <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+        <div className="relative z-10 animate-fade-in">
+          <h1 className="text-5xl md:text-7xl font-bold text-gold-500 mb-6">
+            Timeless Jewelry
+          </h1>
+          <p className="text-lg md:text-2xl text-gray-300 mb-8">
+            Elegance in every sparkle ✨
+          </p>
+          <button
+            onClick={() => router.push("/shop")}
+            className="px-8 py-4 text-lg"
+          >
+            Explore Now
+          </button>
+        </div>
       </section>
 
-      {/* Product Listing */}
-      <section className="mt-8 max-w-6xl mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-6">Featured Jewelry</h2>
+      {/* Featured Products */}
+      <section className="container mx-auto px-6 py-12">
+        <h2 className="text-4xl font-bold mb-8 text-gold-500">Featured Jewelry</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="border rounded-lg p-4 shadow-lg hover:shadow-xl transition"
-            >
-              <Image
-                src={product.image}
-                alt={product.title}
-                width={200}
-                height={200}
-                className="mx-auto rounded"
-                // ✅ remove unoptimized after verifying image config works
-              />
-              <h3 className="text-lg font-semibold mt-3 text-center">
-                {product.title}
-              </h3>
-              <p className="text-gray-700 text-center">${product.price}</p>
-
-              <button
-                onClick={() => addToCart({ ...product, quantity: 1 })}
-                className="mt-3 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-              >
-                Add to Cart 🛒
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Checkout Button */}
-        {cart.length > 0 && (
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => router.push("/checkout")}
-              className="bg-black text-white px-6 py-3 rounded text-lg hover:bg-gray-800 transition"
-            >
-              Proceed to Checkout
-            </button>
+        {loading ? (
+          <div className="text-gray-400">Loading...</div>
+        ) : products.length > 0 ? (
+          <div ref={sliderRef} className="keen-slider">
+            {products.map((product) => (
+              <div key={product.id} className="keen-slider__slide flex justify-center transition-opacity duration-1000">
+                <ProductCard product={product} addToCart={addToCart} />
+              </div>
+            ))}
           </div>
+        ) : (
+          <p className="text-gray-400">No products found.</p>
         )}
+      </section>
+
+      {/* About Section */}
+      <section className="container mx-auto px-6 py-12 bg-black bg-opacity-30 rounded-lg">
+        <h2 className="text-4xl font-bold mb-6 text-gold-500">Our Story</h2>
+        <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          Jewelry Store is where craftsmanship meets passion. Our collections are designed to bring timeless beauty, sophistication, and elegance to every occasion. ✨
+        </p>
+      </section>
+
+      {/* Testimonials */}
+      <section className="container mx-auto px-6 py-12">
+        <h2 className="text-4xl font-bold mb-6 text-gold-500">What Our Clients Say</h2>
+        <div className="flex flex-col md:flex-row gap-8 justify-center">
+          <div className="bg-black p-6 rounded-lg shadow-md">
+            <p className="text-gray-300 italic">"Absolutely stunning designs! The craftsmanship is impeccable."</p>
+            <h4 className="text-gold-500 mt-4">— Sophia R.</h4>
+          </div>
+          <div className="bg-black p-6 rounded-lg shadow-md">
+            <p className="text-gray-300 italic">"I've never seen such unique, timeless pieces. Highly recommend!"</p>
+            <h4 className="text-gold-500 mt-4">— Daniel K.</h4>
+          </div>
+        </div>
       </section>
     </div>
   );

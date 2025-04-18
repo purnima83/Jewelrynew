@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCart } from "../../context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
@@ -22,26 +22,24 @@ export default function CheckoutPage() {
     }
   }, [session]);
 
-  // 🔄 Handle loading state while session is being fetched
   if (status === "loading") {
     return (
-      <div className="container mx-auto px-6 py-8 text-center">
-        <p className="text-gray-600">Loading...</p>
+      <div className="container mx-auto px-6 py-12 text-center">
+        <p className="text-gray-400">Loading session...</p>
       </div>
     );
   }
 
-  // 🚫 Not signed in
   if (!session) {
     return (
-      <div className="container mx-auto px-6 py-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">Please Sign In</h2>
-        <p className="text-gray-600">You must be signed in to continue.</p>
+      <div className="container mx-auto px-6 py-12 text-center">
+        <h2 className="text-3xl font-bold text-gold-500 mb-4">Sign In Required</h2>
+        <p className="text-gray-400 mb-6">You must be signed in to proceed to checkout.</p>
         <button
           onClick={() => signIn(undefined, { callbackUrl: "/checkout" })}
-          className="mt-4 bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+          className="bg-gold-500 text-black px-8 py-3 rounded-full hover:bg-yellow-400 transition"
         >
-          Sign In to Continue
+          Sign In
         </button>
       </div>
     );
@@ -65,62 +63,66 @@ export default function CheckoutPage() {
       const data = await response.json();
 
       if (response.ok && data.url) {
-        clearCart(); // Clear the cart before redirecting
-        router.push(data.url); // Redirect to Stripe Checkout
+        clearCart(); // ✅ Clear cart
+        router.push(data.url); // ✅ Redirect to Stripe
       } else {
-        alert(data.error || "Something went wrong.");
+        alert(data.error || "Something went wrong during checkout.");
       }
     } catch (error) {
-      console.error("Checkout Error:", error);
-      alert("Failed to process checkout.");
+      console.error("🚨 Checkout Error:", error);
+      alert("Checkout failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto px-6 py-8">
-      <h2 className="text-3xl font-bold text-center mb-6">Checkout</h2>
+    <div className="container mx-auto px-6 py-12">
+      <h2 className="text-4xl font-bold text-center mb-10 text-gold-500">Checkout</h2>
 
       {cart.length === 0 ? (
-        <p className="text-center text-gray-500">
+        <p className="text-center text-gray-400">
           Your cart is empty.{" "}
-          <Link href="/shop" className="text-blue-500 underline">
+          <Link href="/shop" className="text-gold-500 underline hover:text-yellow-400">
             Shop Now
           </Link>
         </p>
       ) : (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-2">Billing Details</h3>
+        <div className="max-w-lg mx-auto bg-black bg-opacity-30 p-8 rounded-lg shadow-lg">
+          <h3 className="text-xl font-semibold text-gold-500 mb-6">Billing Details</h3>
 
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border p-2 rounded mb-2"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border p-2 rounded mb-2"
-          />
-          <input
-            type="text"
-            placeholder="Shipping Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="w-full border p-2 rounded mb-4"
-          />
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-gray-700 p-3 rounded bg-black text-white placeholder-gray-500"
+            />
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-gray-700 p-3 rounded bg-black text-white placeholder-gray-500"
+            />
+            <input
+              type="text"
+              placeholder="Shipping Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full border border-gray-700 p-3 rounded bg-black text-white placeholder-gray-500"
+            />
+          </div>
 
           <button
             onClick={handleCheckout}
             disabled={loading}
-            className={`bg-green-600 text-white px-6 py-3 rounded w-full ${
-              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
-            }`}
+            className={`mt-6 w-full px-6 py-3 rounded-full text-lg font-semibold ${
+              loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+            } text-white transition`}
           >
             {loading ? "Processing..." : "Complete Purchase"}
           </button>

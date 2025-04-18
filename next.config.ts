@@ -2,12 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["res.cloudinary.com", "images.unsplash.com", "fakestoreapi.com"],
+    domains: [
+      "res.cloudinary.com",
+      "images.unsplash.com",
+      "fakestoreapi.com",
+      "i.ebayimg.com", // ✅ Allow eBay images
+    ],
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "fakestoreapi.com",
-        pathname: "/**",
+        hostname: "**", // ✅ Allow all external images safely (optional, or be specific)
       },
     ],
   },
@@ -32,20 +36,17 @@ const nextConfig = {
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/fallback-db",
+    EBAY_CLIENT_ID: process.env.EBAY_CLIENT_ID,
+    EBAY_CLIENT_SECRET: process.env.EBAY_CLIENT_SECRET,
+    EBAY_RU_NAME: process.env.EBAY_RU_NAME,
+    EBAY_REDIRECT_URI: process.env.EBAY_REDIRECT_URI,
   },
 };
 
-// ✅ Debugging logs
 console.log("✅ NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL || "Not Found");
 console.log("✅ NEXTAUTH_URL:", process.env.NEXTAUTH_URL || "Not Found");
-console.log(
-  "✅ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:",
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? "Loaded" : "Not Found"
-);
-console.log(
-  "✅ STRIPE_SECRET_KEY:",
-  process.env.STRIPE_SECRET_KEY ? "Loaded" : "Not Found"
-);
+console.log("✅ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:", process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? "Loaded" : "Not Found");
+console.log("✅ STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY ? "Loaded" : "Not Found");
 console.log("✅ MONGODB_URI:", process.env.MONGODB_URI ? "Loaded" : "Not Found");
 
 module.exports = nextConfig;
