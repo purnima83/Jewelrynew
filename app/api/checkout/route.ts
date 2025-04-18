@@ -6,7 +6,7 @@ import Order from "@/models/Order";
 console.log("Stripe Secret Key:", process.env.STRIPE_SECRET_KEY);
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2022-11-15", // ✅ Use latest stable API version compatible with types
+  apiVersion: "2025-02-24.acacia", // ✅ Use latest stable API version compatible with types
 });
 
 export async function POST(req: Request) {
