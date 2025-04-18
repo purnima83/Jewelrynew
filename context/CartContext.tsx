@@ -14,8 +14,8 @@ interface CartContextType {
   cart: Product[];
   mounted: boolean;
   addToCart: (product: Product) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeFromCart: (id: string) => void; // ✅ changed id to string
+  updateQuantity: (id: string, quantity: number) => void; // ✅ changed id to string
   clearCart: () => void;
 }
 
@@ -30,7 +30,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
-    setMounted(true); // ✅ mark as ready after client-side load
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -53,11 +53,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number) => {
     if (quantity < 1) return;
     setCart((prevCart) =>
       prevCart.map((item) =>
