@@ -43,14 +43,14 @@ export default function CartPage() {
                 {/* Quantity Controls */}
                 <div className="flex justify-center space-x-2 mt-2">
                   <button
-                    onClick={() => updateQuantity(Number(product.id), product.quantity - 1)}
+                    onClick={() => updateQuantity(product.id, product.quantity - 1)}
                     className="px-3 py-1 bg-gray-300 text-gray-800 rounded"
                   >
                     -
                   </button>
                   <span className="px-4 py-1 bg-white border">{product.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(Number(product.id), product.quantity + 1)}
+                    onClick={() => updateQuantity(product.id, product.quantity + 1)}
                     className="px-3 py-1 bg-gray-300 text-gray-800 rounded"
                   >
                     +
@@ -59,7 +59,7 @@ export default function CartPage() {
 
                 {/* Remove Button */}
                 <button
-                  onClick={() => removeFromCart(Number(product.id))}
+                  onClick={() => removeFromCart(product.id)}
                   className="mt-2 w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
                 >
                   Remove
