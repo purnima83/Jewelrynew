@@ -7,7 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
-import { Product } from "@/types/product"; // ✅ Centralized Product type
+import { Product } from "@/types/product"; // ✅ Common Product import
 
 interface RawProduct {
   id: string | number;
@@ -49,7 +49,7 @@ export default function Home() {
         const updatedProducts: Product[] = data.map((item) => ({
           id: String(item.id),
           title: item.title,
-          price: Number(item.price),
+          price: typeof item.price === "string" ? parseFloat(item.price) : item.price, // ✅ force number
           image: item.image,
           quantity: 1,
         }));
