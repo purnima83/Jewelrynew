@@ -7,12 +7,19 @@ import ProductCard from "@/components/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
+interface RawProduct {
+  id: string | number;    // ← data from API might have number or string id
+  title: string;
+  price: number | string; // ← API might return string sometimes
+  image: string;
+}
+
 interface Product {
-  id: string;       // ✅ string id (not number)
+  id: string;
   title: string;
   price: number;
   image: string;
-  quantity: number; // ✅ add quantity field
+  quantity: number;
 }
 
 export default function Home() {
@@ -30,7 +37,7 @@ export default function Home() {
     created: (slider) => {
       setInterval(() => {
         slider.next();
-      }, 4000); // Auto-slide every 4s
+      }, 4000);
     },
   });
 
@@ -41,16 +48,16 @@ export default function Home() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/ebay?limit=6"); 
-      const data = await res.json();
+      const res = await fetch("/api/ebay?limit=6");
+      const data: RawProduct[] = await res.json();
 
       if (Array.isArray(data)) {
-        const updatedProducts = data.map((item: any) => ({
-          id: String(item.id),        // ✅ ensure id is string
+        const updatedProducts: Product[] = data.map((item) => ({
+          id: String(item.id),          // always string
           title: item.title,
-          price: item.price,
+          price: Number(item.price),     // always number
           image: item.image,
-          quantity: 1,                 // ✅ always initialize quantity
+          quantity: 1,                   // always 1
         }));
         setProducts(updatedProducts);
       } else {
@@ -98,7 +105,10 @@ export default function Home() {
         ) : products.length > 0 ? (
           <div ref={sliderRef} className="keen-slider">
             {products.map((product) => (
-              <div key={product.id} className="keen-slider__slide flex justify-center transition-opacity duration-1000">
+              <div
+                key={product.id}
+                className="keen-slider__slide flex justify-center transition-opacity duration-1000"
+              >
                 <ProductCard product={product} addToCart={addToCart} />
               </div>
             ))}
