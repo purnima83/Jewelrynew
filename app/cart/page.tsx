@@ -21,7 +21,6 @@ export default function CartPage() {
         </p>
       ) : (
         <div>
-          {/* Cart Items */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cart.map((product) => (
               <div key={product.id} className="border p-4 rounded-lg shadow-lg">
@@ -37,26 +36,24 @@ export default function CartPage() {
                   ${product.price} x {product.quantity}
                 </p>
 
-                {/* Quantity Controls */}
                 <div className="flex justify-center space-x-2 mt-2">
                   <button
-                    onClick={() => updateQuantity(String(product.id), product.quantity - 1)}
+                    onClick={() => updateQuantity(product.id, product.quantity - 1)}
                     className="px-3 py-1 bg-gray-300 text-gray-800 rounded"
                   >
                     -
                   </button>
                   <span className="px-4 py-1 bg-white border">{product.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(String(product.id), product.quantity + 1)}
+                    onClick={() => updateQuantity(product.id, product.quantity + 1)}
                     className="px-3 py-1 bg-gray-300 text-gray-800 rounded"
                   >
                     +
                   </button>
                 </div>
 
-                {/* Remove Button */}
                 <button
-                  onClick={() => removeFromCart(String(product.id))}
+                  onClick={() => removeFromCart(product.id)}
                   className="mt-2 w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
                 >
                   Remove
@@ -65,7 +62,6 @@ export default function CartPage() {
             ))}
           </div>
 
-          {/* Cart Summary */}
           <div className="mt-6 p-4 border-t text-center">
             <h3 className="text-xl font-semibold">Total: ${totalPrice.toFixed(2)}</h3>
 
