@@ -5,8 +5,8 @@ import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
-import { Product } from "@/types/product"; // ✅ Import shared Product type
 import "keen-slider/keen-slider.min.css";
+import { Product } from "@/types/product"; // ✅ import shared Product type
 
 // ✅ RawProduct matches API response
 interface RawProduct {
@@ -51,7 +51,7 @@ export default function Home() {
           title: item.title,
           price: typeof item.price === "string" ? parseFloat(item.price) : item.price,
           image: item.image,
-          quantity: 1, // ✅ Always add quantity field
+          quantity: 1,
         }));
         setProducts(updatedProducts);
       } else {
