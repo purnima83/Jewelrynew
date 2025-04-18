@@ -7,8 +7,16 @@ import ProductCard from "@/components/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
-import { Product } from "@/types/product"; // ✅ Common Product import
+// ✅ Local Product type for this page (SAFE)
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
 
+// ✅ RawProduct matches API response
 interface RawProduct {
   id: string | number;
   title: string;
@@ -49,7 +57,7 @@ export default function Home() {
         const updatedProducts: Product[] = data.map((item) => ({
           id: String(item.id),
           title: item.title,
-          price: typeof item.price === "string" ? parseFloat(item.price) : item.price, // ✅ force number
+          price: typeof item.price === "string" ? parseFloat(item.price) : item.price,
           image: item.image,
           quantity: 1,
         }));
