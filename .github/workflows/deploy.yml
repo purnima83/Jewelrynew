@@ -10,21 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Step 1: Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # ✅ Step 2: Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # ✅ Step 3: Configure Docker
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet
 
-      # ✅ Step 4: Build Docker image with build-time secrets
       - name: Build Docker image
         run: |
           docker build \
@@ -40,13 +36,12 @@ jobs:
             --build-arg GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
             --build-arg EBAY_CLIENT_ID="${{ secrets.EBAY_CLIENT_ID }}" \
             --build-arg EBAY_CLIENT_SECRET="${{ secrets.EBAY_CLIENT_SECRET }}" \
+            --build-arg OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \   ## 📢 added here
             -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
 
-      # ✅ Step 5: Push image to Google Container Registry
       - name: Push Docker image to GCR
         run: docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
 
-      # ✅ Step 6: SSH into VM and deploy
       - name: SSH and deploy to Compute Engine VM
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -70,4 +65,5 @@ jobs:
               -e GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
               -e EBAY_CLIENT_ID="${{ secrets.EBAY_CLIENT_ID }}" \
               -e EBAY_CLIENT_SECRET="${{ secrets.EBAY_CLIENT_SECRET }}" \
+              -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \    ## 📢 added here also
               gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
