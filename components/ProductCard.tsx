@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FC } from "react";
 import { Product } from "@/types/product";
+import { toast } from "react-hot-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +11,11 @@ interface ProductCardProps {
 }
 
 const ProductCard: FC<ProductCardProps> = ({ product, addToCart }) => {
+  const handleAddToCart = () => {
+    addToCart(product);
+    toast.success(`${product.title} added to cart!`);
+  };
+
   return (
     <div className="border-2 border-gold-500 rounded-2xl p-4 bg-white shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex flex-col items-center w-72">
       {/* Image */}
@@ -35,7 +41,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, addToCart }) => {
 
       {/* Add to Cart */}
       <button
-        onClick={() => addToCart(product)}
+        onClick={handleAddToCart}
         className="bg-gold-500 hover:bg-yellow-400 text-black px-5 py-2 rounded-lg transition-all"
       >
         Add to Cart

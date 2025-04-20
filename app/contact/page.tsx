@@ -1,6 +1,29 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // ✅ Success toast
+    toast.success("Your message has been sent successfully! ✨");
+
+    // ✅ Reset form
+    setFormData({ name: "", email: "", message: "" });
+  };
+
   return (
     <div className="container mx-auto px-6 py-12 text-center">
       {/* Header */}
@@ -12,28 +35,37 @@ export default function ContactPage() {
 
       {/* Contact Form */}
       <div className="bg-black bg-opacity-40 rounded-lg p-8 max-w-2xl mx-auto shadow-lg">
-        <form className="flex flex-col gap-6">
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <input
             type="text"
+            name="name"
             placeholder="Your Name"
+            value={formData.name}
+            onChange={handleChange}
             className="px-4 py-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
             required
           />
           <input
             type="email"
+            name="email"
             placeholder="Your Email"
+            value={formData.email}
+            onChange={handleChange}
             className="px-4 py-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
             required
           />
           <textarea
+            name="message"
             placeholder="Your Message"
             rows={5}
+            value={formData.message}
+            onChange={handleChange}
             className="px-4 py-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
             required
           ></textarea>
           <button
             type="submit"
-            className="bg-gold-500 hover:bg-gold-400 text-black font-semibold py-3 rounded-md transition"
+            className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold py-3 rounded-md transition"
           >
             Send Message
           </button>

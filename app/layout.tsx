@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../styles/globals.css"; // ✅ Correct path
+import "../styles/globals.css"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
@@ -39,10 +39,10 @@ export default function RootLayout({
                   {children}
                 </main>
                 <Footer />
+                <Toaster position="top-center" reverseOrder={false} /> {/* ✅ Moved inside CartProvider */}
               </CartProvider>
             </AuthProvider>
           </SessionProvider>
-          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>

@@ -86,12 +86,12 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       {menuOpen && (
-        <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4">
+        <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4 text-[#f6e05e]">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="text-lg text-[#f6e05e] hover:text-[#ffe066] transition-colors"
+              className="text-lg hover:text-[#ffe066] transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
@@ -101,7 +101,7 @@ export default function Navbar() {
           <Link
             href="/cart"
             onClick={() => setMenuOpen(false)}
-            className="text-lg text-[#f6e05e] hover:text-[#ffe066] transition-colors"
+            className="text-lg hover:text-[#ffe066] transition-colors"
           >
             🛒 Cart
           </Link>

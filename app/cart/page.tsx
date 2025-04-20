@@ -9,49 +9,62 @@ export default function CartPage() {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const router = useRouter();
 
-  const totalPrice = cart.reduce((total, item) => total + Number(item.price) * item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (total, item) => total + Number(item.price) * item.quantity,
+    0
+  );
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <h2 className="text-3xl font-bold text-center mb-6">Shopping Cart</h2>
+      <h2 className="text-4xl font-bold text-center mb-10 text-gold-500">
+        Shopping Cart
+      </h2>
 
       {cart.length === 0 ? (
-        <p className="text-center text-gray-500">
+        <p className="text-center text-gray-400 text-lg">
           Your cart is empty.{" "}
-          <Link href="/shop" className="text-blue-500 underline">
+          <Link href="/shop" className="text-yellow-400 underline hover:text-yellow-300">
             Shop Now
           </Link>
         </p>
       ) : (
         <div>
           {/* Cart Items */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {cart.map((product) => (
-              <div key={product.id} className="border p-4 rounded-lg shadow-lg">
+              <div key={product.id} className="border border-gold-500 p-6 rounded-2xl shadow-lg flex flex-col items-center bg-black">
                 <Image
                   src={product.image}
                   alt={product.title}
-                  width={150}
-                  height={150}
-                  className="mx-auto rounded"
+                  width={180}
+                  height={180}
+                  className="rounded-lg object-contain"
                 />
-                <h3 className="mt-2 text-lg font-semibold text-center">{product.title}</h3>
-                <p className="text-gray-700 text-center">
+                <h3 className="mt-4 text-xl font-semibold text-center text-white">
+                  {product.title}
+                </h3>
+                <p className="mt-2 text-gray-400 text-center">
                   ${Number(product.price).toFixed(2)} x {product.quantity}
                 </p>
 
                 {/* Quantity Controls */}
-                <div className="flex justify-center space-x-2 mt-2">
+                <div className="flex items-center space-x-2 mt-4">
                   <button
                     onClick={() => updateQuantity(product.id, product.quantity - 1)}
-                    className="px-3 py-1 bg-gray-300 text-gray-800 rounded"
+                    className="px-3 py-1 bg-gold-500 hover:bg-yellow-400 text-black rounded-lg text-xl transition"
                   >
                     -
                   </button>
-                  <span className="px-4 py-1 bg-white border">{product.quantity}</span>
+
+                  <input
+                    value={product.quantity}
+                    readOnly
+                    className="w-12 text-center px-2 py-1 rounded-lg bg-white text-black border border-gold-500"
+                  />
+
                   <button
                     onClick={() => updateQuantity(product.id, product.quantity + 1)}
-                    className="px-3 py-1 bg-gray-300 text-gray-800 rounded"
+                    className="px-3 py-1 bg-gold-500 hover:bg-yellow-400 text-black rounded-lg text-xl transition"
                   >
                     +
                   </button>
@@ -60,7 +73,7 @@ export default function CartPage() {
                 {/* Remove Button */}
                 <button
                   onClick={() => removeFromCart(product.id)}
-                  className="mt-2 w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                  className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-semibold transition"
                 >
                   Remove
                 </button>
@@ -69,13 +82,15 @@ export default function CartPage() {
           </div>
 
           {/* Cart Summary */}
-          <div className="mt-6 p-4 border-t text-center">
-            <h3 className="text-xl font-semibold">Total: ${totalPrice.toFixed(2)}</h3>
+          <div className="mt-10 p-6 border-t-2 border-gold-500 text-center">
+            <h3 className="text-2xl font-bold text-gold-500">
+              Total: ${totalPrice.toFixed(2)}
+            </h3>
 
             {/* Proceed to Checkout Button */}
             <button
               onClick={() => router.push("/checkout")}
-              className="mt-3 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+              className="mt-6 bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-8 py-3 rounded-xl transition text-lg"
             >
               Proceed to Checkout
             </button>
