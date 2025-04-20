@@ -19,10 +19,19 @@ export default function Navbar() {
     { label: "Contact", href: "/contact" },
   ];
 
+  const handleAuth = async () => {
+    if (session) {
+      await signOut();
+    } else {
+      await signIn("google");
+    }
+    setMenuOpen(false);
+  };
+
   return (
     <nav className="bg-black border-b border-gold-500 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        
+
         {/* Logo */}
         <Link href="/" className="text-3xl font-bold text-gold-500">
           Jewelry Store
@@ -30,9 +39,9 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8 text-lg text-white">
-          {navLinks.map((link, idx) => (
+          {navLinks.map((link) => (
             <Link
-              key={idx}
+              key={link.label}
               href={link.href}
               className="hover:text-yellow-400 transition-colors"
             >
@@ -57,9 +66,9 @@ export default function Navbar() {
             </span>
           )}
 
-          {/* Login/Logout */}
+          {/* Auth Button */}
           <button
-            onClick={() => (session ? signOut() : signIn("google"))}
+            onClick={handleAuth}
             className="ml-4 bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
           >
             {session ? "Logout" : "Login"}
@@ -78,9 +87,9 @@ export default function Navbar() {
       {/* Mobile Dropdown */}
       {menuOpen && (
         <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4 text-white">
-          {navLinks.map((link, idx) => (
+          {navLinks.map((link) => (
             <Link
-              key={idx}
+              key={link.label}
               href={link.href}
               className="text-lg hover:text-yellow-400 transition-colors"
               onClick={() => setMenuOpen(false)}
@@ -104,10 +113,7 @@ export default function Navbar() {
           )}
 
           <button
-            onClick={() => {
-              session ? signOut() : signIn("google");
-              setMenuOpen(false);
-            }}
+            onClick={handleAuth}
             className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
           >
             {session ? "Logout" : "Login"}
