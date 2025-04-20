@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCart } from "@/context/CartContext";
-import { useRouter } from "next/navigation";
-import ProductCard from "@/components/ProductCard";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { Product } from "@/types/product"; // ✅ import shared Product type
+import { useCart } from "@/context/CartContext";
+import { useRouter } from "next/navigation";
+import FloatingChatbot from "@/components/FloatingChatbot";
+import ProductCard from "@/components/ProductCard";
 
-// ✅ RawProduct matches API response
-interface RawProduct {
-  id: string | number;
+interface Product {
+  id: number;
   title: string;
-  price: string | number;
+  price: number;
   image: string;
 }
 
@@ -25,12 +24,13 @@ export default function Home() {
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     mode: "free-snap",
-    slides: { perView: 1 },
     renderMode: "performance",
-    defaultAnimation: { duration: 2000 },
+    slides: { perView: 1 },
+    drag: true,
+    defaultAnimation: { duration: 2500, easing: (t) => t * (2 - t) },
     created: (slider) => {
       setInterval(() => {
-        slider.next();
+        slider.moveToIdx(slider.track.details.abs + 1, true);
       }, 4000);
     },
   });
@@ -42,24 +42,11 @@ export default function Home() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/ebay?limit=6");
-      const data: RawProduct[] = await res.json();
-
-      if (Array.isArray(data)) {
-        const updatedProducts: Product[] = data.map((item) => ({
-          id: String(item.id),
-          title: item.title,
-          price: typeof item.price === "string" ? parseFloat(item.price) : item.price,
-          image: item.image,
-          quantity: 1,
-        }));
-        setProducts(updatedProducts);
-      } else {
-        console.warn("⚠️ Unexpected response:", data);
-        setProducts([]);
-      }
+      const res = await fetch("https://fakestoreapi.com/products/category/jewelery");
+      const data: Product[] = await res.json();
+      setProducts(data);
     } catch (err) {
-      console.error("❌ Error fetching products:", err);
+      console.error("Failed to fetch products:", err);
       setProducts([]);
     } finally {
       setLoading(false);
@@ -67,73 +54,81 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center text-center">
+    <div className="flex flex-col items-center justify-center text-center relative">
+
       {/* Hero Section */}
       <section
-        className="relative w-full h-[95vh] flex items-center justify-center bg-cover bg-center"
+        className="relative w-full h-[85vh] flex items-center justify-center bg-cover bg-center"
         style={{ backgroundImage: "url('/hero-jewelry.jpg')" }}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"></div>
         <div className="relative z-10 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold text-gold-500 mb-6">
-            Timeless Jewelry
+          <h1 className="text-5xl md:text-7xl font-bold text-gold-500 mb-6 drop-shadow-lg">
+            Dazzle with Every Detail
           </h1>
-          <p className="text-lg md:text-2xl text-gray-300 mb-8">
-            Elegance in every sparkle ✨
+          <p className="text-lg md:text-2xl text-gray-200 mb-8 drop-shadow-sm">
+            Discover jewelry that tells your story ✨
           </p>
           <button
             onClick={() => router.push("/shop")}
-            className="px-8 py-4 text-lg"
+            className="px-8 py-4 text-lg bg-gold-500 hover:bg-yellow-400 text-black rounded-xl transition-all hover:scale-105"
           >
-            Explore Now
+            Explore Collection
           </button>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-4xl font-bold mb-8 text-gold-500">Featured Jewelry</h2>
+      {/* Featured Jewelry */}
+      <section className="container mx-auto px-6 py-12 animate-fade-in">
+        <h2 className="text-4xl font-bold mb-8 text-gold-500 text-center">
+          Featured Jewelry
+        </h2>
 
         {loading ? (
-          <div className="text-gray-400">Loading...</div>
+          <div className="text-gray-400 text-center text-xl animate-pulse">
+            Loading jewelry...
+          </div>
         ) : products.length > 0 ? (
           <div ref={sliderRef} className="keen-slider">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="keen-slider__slide flex justify-center transition-opacity duration-1000"
+                className="keen-slider__slide flex justify-center items-center p-4 transition-transform duration-1000"
               >
-                <ProductCard product={product} addToCart={addToCart} />
+                <div className="border border-gold-500 rounded-xl p-4 bg-white max-w-sm w-full hover:scale-105 transition-all">
+                  <ProductCard product={product} addToCart={addToCart} />
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-400">No products found.</p>
+          <p className="text-gray-400 text-center">No products found.</p>
         )}
       </section>
 
-      {/* About Section */}
-      <section className="container mx-auto px-6 py-12 bg-black bg-opacity-30 rounded-lg">
-        <h2 className="text-4xl font-bold mb-6 text-gold-500">Our Story</h2>
-        <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
-          Jewelry Store is where craftsmanship meets passion. Our collections are designed to bring timeless beauty, sophistication, and elegance to every occasion. ✨
-        </p>
-      </section>
-
       {/* Testimonials */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-4xl font-bold mb-6 text-gold-500">What Our Clients Say</h2>
+      <section className="container mx-auto px-6 py-16 animate-fade-in">
+        <h2 className="text-4xl font-bold mb-8 text-gold-500 text-center">
+          Our Happy Clients
+        </h2>
         <div className="flex flex-col md:flex-row gap-8 justify-center">
-          <div className="bg-black p-6 rounded-lg shadow-md">
-            <p className="text-gray-300 italic">"Absolutely stunning designs! The craftsmanship is impeccable."</p>
-            <h4 className="text-gold-500 mt-4">— Sophia R.</h4>
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md text-center hover:scale-105 transition-all">
+            <p className="text-gray-700 italic mb-4">
+              "Absolutely stunning designs! The craftsmanship is impeccable."
+            </p>
+            <h4 className="text-gold-500 font-semibold">— Sophia R.</h4>
           </div>
-          <div className="bg-black p-6 rounded-lg shadow-md">
-            <p className="text-gray-300 italic">"I've never seen such unique, timeless pieces. Highly recommend!"</p>
-            <h4 className="text-gold-500 mt-4">— Daniel K.</h4>
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md text-center hover:scale-105 transition-all">
+            <p className="text-gray-700 italic mb-4">
+              "I've never seen such unique, timeless pieces. Highly recommend!"
+            </p>
+            <h4 className="text-gold-500 font-semibold">— Daniel K.</h4>
           </div>
         </div>
       </section>
+
+      {/* Chatbot */}
+      <FloatingChatbot />
     </div>
   );
 }

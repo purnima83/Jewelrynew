@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #c71585; /* Deep Pink */
+  --foreground: #f5f5f5; /* Light text */
+  --accent: #ffd700;      /* Brighter Luxury Gold */
+  --muted: #aaaaaa;       /* Soft gray */
+}
+
+/* Base */
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  min-height: 100vh;
+}
+
+/* Links */
+a {
+  @apply transition-colors duration-200;
+  color: var(--accent);
+}
+
+a:hover {
+  color: #ffea00; /* Brighter gold on hover */
+}
+
+/* Buttons */
+button {
+  @apply px-4 py-2 rounded-md font-medium transition-all duration-300;
+  background-color: var(--accent);
+  color: var(--background);
+  border: none;
+}
+
+button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--foreground);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Containers */
+.container {
+  @apply max-w-7xl mx-auto px-4;
+}
+
+/* Inputs & Selects */
+input, select {
+  background-color: #fff;
+  color: #1a1a1a;
+  border: 1px solid var(--muted);
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+/* Cards & Sections */
+section, .card {
+  background-color: #fff;
+  border-radius: 0.75rem;
+}
+
+/* Hero background blur */
+.backdrop-blur-sm {
+  backdrop-filter: blur(6px);
+}
+
+/* Animations */
+@keyframes slide-down {
+  0% { opacity: 0; transform: translateY(-20%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.5s ease-out forwards;
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 1.5s ease-out forwards;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}

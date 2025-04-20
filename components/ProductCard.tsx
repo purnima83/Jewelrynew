@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FC } from "react";
-import { Product } from "@/types/product"; // ✅ Import the shared Product type
+import { Product } from "@/types/product";
 
 interface ProductCardProps {
   product: Product;
@@ -11,22 +11,32 @@ interface ProductCardProps {
 
 const ProductCard: FC<ProductCardProps> = ({ product, addToCart }) => {
   return (
-    <div className="border rounded-lg p-4 shadow hover:shadow-lg transition">
-      <Image
-        src={product.image}
-        alt={product.title}
-        width={300}
-        height={300}
-        className="object-cover mx-auto rounded"
-      />
-      <h3 className="text-lg font-bold mt-2 text-center">{product.title}</h3>
-      <p className="text-gray-700 text-center">
+    <div className="border-2 border-gold-500 rounded-2xl p-4 bg-white shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex flex-col items-center w-72">
+      {/* Image */}
+      <div className="w-60 h-60 relative mb-4">
+        <Image
+          src={product.image}
+          alt={product.title}
+          layout="fill"
+          objectFit="contain"
+          className="rounded-lg"
+        />
+      </div>
+
+      {/* Title */}
+      <h3 className="text-lg font-semibold text-center mb-2 text-gray-800">
+        {product.title}
+      </h3>
+
+      {/* Price */}
+      <p className="text-gray-600 text-center mb-4 text-base">
         ${Number(product.price).toFixed(2)}
       </p>
 
+      {/* Add to Cart */}
       <button
         onClick={() => addToCart(product)}
-        className="block mt-4 mx-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        className="bg-gold-500 hover:bg-yellow-400 text-black px-5 py-2 rounded-lg transition-all"
       >
         Add to Cart
       </button>

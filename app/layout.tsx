@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../styles/globals.css"; // ✅ Correct path
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import SessionProvider from "@/context/SessionProvider";
 import ThemeProvider from "@/context/ThemeProvider";
-import { Toaster } from "react-hot-toast"; // ✅ NEW Import
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,20 +29,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased flex flex-col min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+      <body className="antialiased flex flex-col min-h-screen bg-black text-white">
         <ThemeProvider>
           <SessionProvider>
             <AuthProvider>
               <CartProvider>
                 <Navbar />
-                <main className="flex-grow container mx-auto px-4 py-8">
+                <main className="flex-grow container mx-auto px-4 py-8 animate-fade-in">
                   {children}
                 </main>
                 <Footer />
               </CartProvider>
             </AuthProvider>
           </SessionProvider>
-          <Toaster position="top-right" /> {/* ✅ Add Toaster inside ThemeProvider */}
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>
