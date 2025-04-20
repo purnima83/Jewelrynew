@@ -23,6 +23,7 @@ ARG GITHUB_CLIENT_ID
 ARG GITHUB_CLIENT_SECRET
 ARG EBAY_CLIENT_ID
 ARG EBAY_CLIENT_SECRET
+ARG OPENAI_API_KEY    # ✅ Added here
 
 # Expose them to Next.js during build time
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -36,7 +37,7 @@ ENV GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
 ENV GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
 ENV EBAY_CLIENT_ID=$EBAY_CLIENT_ID
 ENV EBAY_CLIENT_SECRET=$EBAY_CLIENT_SECRET
-
+ENV OPENAI_API_KEY=$OPENAI_API_KEY   # ✅ Expose to build time
 
 # Build the Next.js app
 RUN npm run build
@@ -52,13 +53,16 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-# Expose environment variables at runtime again
+# Expose runtime environment variables
 ENV NODE_ENV=production
+
+# You can optionally expose the OPENAI_API_KEY again if needed at runtime.
+# Otherwise, it's better to inject through docker run/env vars at deploy time.
 
 # Expose port
 EXPOSE 8080
 
-# Healthcheck (optional but good for GCP)
+# Healthcheck (optional)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --spider -q http://localhost:8080 || exit 1
 
