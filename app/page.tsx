@@ -7,13 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import FloatingChatbot from "@/components/FloatingChatbot";
 import ProductCard from "@/components/ProductCard";
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
+import { Product } from "@/types/product"; // ✅ Correctly imported
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,8 +37,15 @@ export default function Home() {
     setLoading(true);
     try {
       const res = await fetch("https://fakestoreapi.com/products/category/jewelery");
-      const data: Product[] = await res.json();
-      setProducts(data);
+      const data = await res.json();
+      const mappedProducts: Product[] = data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        image: item.image,
+        quantity: 1, // ✅ Add quantity
+      }));
+      setProducts(mappedProducts);
     } catch (err) {
       console.error("Failed to fetch products:", err);
       setProducts([]);
@@ -55,7 +56,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center text-center relative">
-
       {/* Hero Section */}
       <section
         className="relative w-full h-[85vh] flex items-center justify-center bg-cover bg-center"
