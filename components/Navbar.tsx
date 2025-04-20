@@ -38,19 +38,19 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-8 text-lg text-white">
+        <div className="hidden md:flex items-center space-x-8 text-lg">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="hover:text-yellow-400 transition-colors"
+              className="text-[#f6e05e] hover:text-[#ffe066] transition-colors"
             >
               {link.label}
             </Link>
           ))}
 
           {/* Cart */}
-          <Link href="/cart" className="relative hover:text-yellow-400 transition">
+          <Link href="/cart" className="relative text-[#f6e05e] hover:text-[#ffe066] transition">
             🛒 Cart
             {cart.length > 0 && (
               <span className="absolute -top-2 -right-3 bg-gold-500 text-black rounded-full text-xs w-5 h-5 flex items-center justify-center">
@@ -86,12 +86,12 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       {menuOpen && (
-        <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4 text-white">
+        <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="text-lg hover:text-yellow-400 transition-colors"
+              className="text-lg text-[#f6e05e] hover:text-[#ffe066] transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
@@ -101,7 +101,7 @@ export default function Navbar() {
           <Link
             href="/cart"
             onClick={() => setMenuOpen(false)}
-            className="text-lg hover:text-yellow-400 transition-colors"
+            className="text-lg text-[#f6e05e] hover:text-[#ffe066] transition-colors"
           >
             🛒 Cart
           </Link>
