@@ -1,18 +1,14 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
       "res.cloudinary.com",
       "images.unsplash.com",
-      "fakestoreapi.com",
+      "fakestoreapi.com", // ✅ needed for your featured jewelry
       "i.ebayimg.com",
     ],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
+    // Removed remotePatterns: it was unnecessary
   },
   async headers() {
     return [
