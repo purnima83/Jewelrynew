@@ -13,10 +13,13 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",  // ✅ Ensures aliases resolve correctly
+    "baseUrl": ".",  
     "paths": {
       "@/*": ["./*"],
-      "@/context/*": ["context/*"]  // ✅ Ensures `@/context/CartContext` works
+      "@/context/*": ["context/*"],
+      "@/models/*": ["models/*"],   // ✅ Add this line
+      "@/utils/*": ["utils/*"],      // ✅ You can add if needed too
+      "@/lib/*": ["lib/*"]           // ✅ For mongo db connections etc
     },
     "plugins": [
       {
