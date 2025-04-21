@@ -1,3 +1,6 @@
+import path from "path";
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -6,7 +9,7 @@ const nextConfig = {
       "images.unsplash.com",
       "i.ebayimg.com",
     ],
-    unoptimized: true, // ⚡ Add this line
+    unoptimized: true, // ✅ already correct
   },
   async headers() {
     return [
@@ -22,6 +25,10 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+  },
+  webpack(config) {
+    config.resolve.alias['@'] = path.resolve(__dirname); 
+    return config;
   },
 };
 
