@@ -28,7 +28,7 @@ export default function ShopPage() {
   const fetchProducts = async (pageNumber: number, selectedCategory: string) => {
     setLoading(true);
     try {
-      let query = selectedCategory === "All" ? "jewelry" : selectedCategory;
+      const query = selectedCategory === "All" ? "jewelry" : selectedCategory;
       const res = await fetch(`/api/ebay?q=${encodeURIComponent(query)}&limit=12&page=${pageNumber}`);
       const data = await res.json();
       if (Array.isArray(data)) {
