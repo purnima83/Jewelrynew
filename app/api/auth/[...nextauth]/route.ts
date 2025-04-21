@@ -55,15 +55,16 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = (user as any).id;
         token.role = (user as any).role || "user";
       }
       return token;
     },
+
     async session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id;
-        session.user.role = token.role;
+      if (session.user) {
+        session.user.id = String(token.id);   // ✅ force to string
+        session.user.role = token.role as string || "user"; // ✅ safely cast
       }
       return session;
     },
