@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import Order from "../../../../models/order";
-import User from "../../../../models/user";
+import Order from "@/models/order";
+import User from "@/models/user";
 import Product from "@/models/product";
 import { readSavedApplicationToken, getApplicationAccessToken } from "@/utils/ebayAppToken.mjs";
 
