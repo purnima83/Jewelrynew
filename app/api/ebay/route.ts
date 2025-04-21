@@ -4,14 +4,17 @@ import { readSavedApplicationToken, getApplicationAccessToken } from "@/utils/eb
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "jewelry";
-  const limit = searchParams.get("limit") || "20";
+  const limit = Number(searchParams.get("limit")) || 20;
+  const page = Number(searchParams.get("page")) || 1;
+
+  const offset = (page - 1) * limit; // ✅ Calculate correct offset for pagination
 
   let token = readSavedApplicationToken();
 
   // Helper function
   const fetchEbay = async (accessToken: string) => {
     return await fetch(
-      `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(q)}&limit=${limit}`,
+      `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -21,7 +24,6 @@ export async function GET(req: Request) {
     );
   };
 
-  // ✅ VERY IMPORTANT: Check token before calling fetchEbay
   if (!token) {
     console.warn("⚠️ No token found, fetching new one...");
     token = await getApplicationAccessToken();
@@ -32,7 +34,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "eBay token unavailable" }, { status: 500 });
   }
 
-  let res = await fetchEbay(token); // ✅ SAFE because token is guaranteed string
+  let res = await fetchEbay(token);
   let data = await res.json();
 
   if (res.status === 401) {

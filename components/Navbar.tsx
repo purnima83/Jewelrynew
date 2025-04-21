@@ -66,13 +66,30 @@ export default function Navbar() {
             </span>
           )}
 
-          {/* Auth Button */}
-          <button
-            onClick={handleAuth}
-            className="ml-4 bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
-          >
-            {session ? "Logout" : "Login"}
-          </button>
+          {/* Auth Buttons */}
+          {session ? (
+            <button
+              onClick={handleAuth}
+              className="ml-4 bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
+            >
+              Logout
+            </button>
+          ) : (
+            <div className="flex space-x-4">
+              <button
+                onClick={handleAuth}
+                className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
+              >
+                Login
+              </button>
+              <Link
+                href="/register"
+                className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -106,18 +123,30 @@ export default function Navbar() {
             🛒 Cart
           </Link>
 
-          {session?.user?.name && (
-            <span className="text-gold-500 text-lg">
-              Hi, {session.user.name.split(" ")[0]} 👋
-            </span>
+          {session ? (
+            <button
+              onClick={handleAuth}
+              className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleAuth}
+                className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
+              >
+                Login
+              </button>
+              <Link
+                href="/register"
+                className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition"
+                onClick={() => setMenuOpen(false)}
+              >
+                Register
+              </Link>
+            </>
           )}
-
-          <button
-            onClick={handleAuth}
-            className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
-          >
-            {session ? "Logout" : "Login"}
-          </button>
         </div>
       )}
     </nav>
