@@ -1,14 +1,8 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function DELETE(req: NextRequest, context: Params) {
+export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
   try {
     await connectToDatabase();
     await User.findByIdAndDelete(context.params.id);
@@ -19,7 +13,7 @@ export async function DELETE(req: NextRequest, context: Params) {
   }
 }
 
-export async function PATCH(req: NextRequest, context: Params) {
+export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
   try {
     await connectToDatabase();
     const { role } = await req.json();
