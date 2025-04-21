@@ -1,10 +1,11 @@
 import { connectToDatabase } from "@/lib/mongodb";
-import Order from "@/models/order";
+import { getOrderModel } from "@/lib/orderModel"; // ✅ use new dynamic model
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     await connectToDatabase();
+    const Order = getOrderModel(); // ✅ load model dynamically
     const orders = await Order.find();
     return NextResponse.json(orders);
   } catch (error) {
@@ -23,6 +24,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Order ID is required" }, { status: 400 });
     }
 
+    const Order = getOrderModel(); // ✅ load model dynamically
     await Order.findByIdAndUpdate(id, { status: "completed" });
     return NextResponse.json({ success: true });
   } catch (error) {

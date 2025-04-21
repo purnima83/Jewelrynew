@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import Order from "@/models/order";
-import User from "@/models/user";
-import Product from "@/models/product";
+import { getOrderModel } from "@/lib/orderModel";
+import { getUserModel } from "@/lib/userModel";
+import { getProductModel } from "@/lib/productModel";
 import { readSavedApplicationToken, getApplicationAccessToken } from "@/utils/ebayAppToken.mjs";
 
 export async function GET() {
   try {
     await connectToDatabase();
+
+    const Order = getOrderModel();
+    const User = getUserModel();
+    const Product = getProductModel();
 
     const [orders, users, products] = await Promise.all([
       Order.find({}),
@@ -15,7 +19,6 @@ export async function GET() {
       Product.find({}),
     ]);
 
-    // Get eBay token
     let token = readSavedApplicationToken();
     if (!token) {
       token = await getApplicationAccessToken();
@@ -36,7 +39,6 @@ export async function GET() {
         if (res.ok) {
           ebayCount = data.total || 0;
         } else if (res.status === 401) {
-          // Token expired — retry
           token = await getApplicationAccessToken();
           const retryRes = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=jewelry&limit=5`, {
             headers: {
