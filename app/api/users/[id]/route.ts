@@ -2,7 +2,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
 
   if (!id) {
@@ -19,7 +19,7 @@ export async function DELETE(req: NextRequest, context: { params: { id: string }
   }
 }
 
-export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
 
   if (!id) {
@@ -28,7 +28,7 @@ export async function PATCH(req: NextRequest, context: { params: { id: string } 
 
   try {
     await connectToDatabase();
-    const { role } = await req.json();
+    const { role } = await request.json();
     await User.findByIdAndUpdate(id, { role });
     return NextResponse.json({ message: "User role updated successfully" });
   } catch (error) {
