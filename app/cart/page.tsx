@@ -4,10 +4,32 @@ import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity, mounted } = useCart();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  if (!mounted || status === "loading") {
+    return <div className="text-center py-12 text-lg">Loading cart...</div>;
+  }
+
+  if (!session) {
+    return (
+      <div className="container mx-auto px-6 py-12 text-center">
+        <h2 className="text-4xl font-bold mb-8 text-gold-500">
+          Please login to view your cart 🛒
+        </h2>
+        <Link
+          href="/login"
+          className="inline-block bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-8 py-3 rounded-lg transition"
+        >
+          Go to Login
+        </Link>
+      </div>
+    );
+  }
 
   const totalPrice = cart.reduce(
     (total, item) => total + Number(item.price) * item.quantity,
@@ -23,7 +45,10 @@ export default function CartPage() {
       {cart.length === 0 ? (
         <p className="text-center text-gray-400 text-lg">
           Your cart is empty.{" "}
-          <Link href="/shop" className="text-yellow-400 underline hover:text-yellow-300">
+          <Link
+            href="/shop"
+            className="text-yellow-400 underline hover:text-yellow-300"
+          >
             Shop Now
           </Link>
         </p>
@@ -32,7 +57,10 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {cart.map((product) => (
-              <div key={product.id} className="border border-gold-500 p-6 rounded-2xl shadow-lg flex flex-col items-center bg-black">
+              <div
+                key={product.id}
+                className="border border-gold-500 p-6 rounded-2xl shadow-lg flex flex-col items-center bg-black"
+              >
                 <Image
                   src={product.image}
                   alt={product.title}

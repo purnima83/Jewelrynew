@@ -1,47 +1,58 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (res.ok) {
+      toast.success("Registration successful! Please log in.");
+      router.push("/login");
+    } else {
+      const data = await res.json();
+      toast.error(data.error || "Registration failed");
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black px-6">
-      <div className="bg-gray-900 p-8 rounded-2xl shadow-lg max-w-md w-full">
-        <h1 className="text-3xl font-bold text-gold-500 text-center mb-6">
-          Create an Account
-        </h1>
-        <form className="flex flex-col gap-5">
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="px-4 py-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email Address"
-            className="px-4 py-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="px-4 py-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold py-3 rounded-md transition-all"
-          >
-            Register
-          </button>
-        </form>
-        <p className="text-gray-400 mt-6 text-center text-sm">
-          Already have an account?{" "}
-          <Link href="/login" className="text-gold-500 hover:underline">
-            Login
-          </Link>
-        </p>
-      </div>
+    <div className="container mx-auto px-6 py-12">
+      <h2 className="text-4xl font-bold text-center mb-6">Register</h2>
+      <form onSubmit={handleRegister} className="max-w-md mx-auto bg-black p-8 rounded-lg shadow-lg">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="w-full mb-4 p-3 rounded bg-gray-800 text-white"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full mb-4 p-3 rounded bg-gray-800 text-white"
+        />
+        <button
+          type="submit"
+          className="w-full py-3 bg-gold-500 hover:bg-gold-400 text-black rounded font-semibold"
+        >
+          Register
+        </button>
+      </form>
     </div>
   );
 }

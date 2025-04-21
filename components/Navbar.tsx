@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const { data: session, status } = useSession();
 
   if (status === "loading") return null;
@@ -19,13 +20,16 @@ export default function Navbar() {
     { label: "Contact", href: "/contact" },
   ];
 
-  const handleAuth = async () => {
-    if (session) {
-      await signOut();
-    } else {
-      await signIn("google");
-    }
-    setMenuOpen(false);
+  const handleLogout = async () => {
+    clearCart();
+    await signOut();
+    toast.success("Logged out successfully 🚀");
+  };
+
+  const getGreetingName = () => {
+    if (session?.user?.name) return session.user.name.split(" ")[0];
+    if (session?.user?.email) return session.user.email.split("@")[0];
+    return "Guest";
   };
 
   return (
@@ -52,7 +56,7 @@ export default function Navbar() {
           {/* Cart */}
           <Link href="/cart" className="relative text-[#f6e05e] hover:text-[#ffe066] transition">
             🛒 Cart
-            {cart.length > 0 && (
+            {session && cart.length > 0 && (
               <span className="absolute -top-2 -right-3 bg-gold-500 text-black rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {cart.length}
               </span>
@@ -60,28 +64,28 @@ export default function Navbar() {
           </Link>
 
           {/* Greeting */}
-          {session?.user?.name && (
+          {session?.user && (
             <span className="text-gold-500 ml-4 whitespace-nowrap">
-              Hi, {session.user.name.split(" ")[0]} 👋
+              Hi, {getGreetingName()} 👋
             </span>
           )}
 
           {/* Auth Buttons */}
           {session ? (
             <button
-              onClick={handleAuth}
+              onClick={handleLogout}
               className="ml-4 bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
             >
               Logout
             </button>
           ) : (
             <div className="flex space-x-4">
-              <button
-                onClick={handleAuth}
+              <Link
+                href="/login"
                 className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
               >
                 Login
-              </button>
+              </Link>
               <Link
                 href="/register"
                 className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition"
@@ -124,24 +128,31 @@ export default function Navbar() {
           </Link>
 
           {session ? (
-            <button
-              onClick={handleAuth}
-              className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
-            >
-              Logout
-            </button>
-          ) : (
             <>
+              <span className="text-gold-500 text-center">Hi, {getGreetingName()} 👋</span>
               <button
-                onClick={handleAuth}
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
                 className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
               >
-                Login
+                Logout
               </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition text-center"
+              >
+                Login
+              </Link>
               <Link
                 href="/register"
-                className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition"
                 onClick={() => setMenuOpen(false)}
+                className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition text-center"
               >
                 Register
               </Link>
