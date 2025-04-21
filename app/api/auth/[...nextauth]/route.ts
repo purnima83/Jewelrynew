@@ -2,13 +2,12 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
-import { connectToDatabase } from "@/lib/mongodb"; // ✅ correct path now
-import User from "@/models/user"; // ✅ user model
+import { connectToDatabase } from "@/lib/mongodb";
+import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-export const authOptions = {
+const handler = NextAuth({
   providers: [
-    // Credentials Login
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -32,17 +31,15 @@ export const authOptions = {
           throw new Error("Invalid password");
         }
 
-        return { id: user._id.toString(), email: user.email };
+        return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
 
-    // Google OAuth
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
-    // GitHub OAuth
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
@@ -59,17 +56,18 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as any).role || "user";
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },
   },
-};
+});
 
-const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
