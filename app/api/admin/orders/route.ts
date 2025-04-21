@@ -3,15 +3,30 @@ import Order from "@/models/order";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  await connectToDatabase();
-  const orders = await Order.find();
-  return NextResponse.json(orders);
+  try {
+    await connectToDatabase();
+    const orders = await Order.find();
+    return NextResponse.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+  }
 }
 
 export async function PUT(req: Request) {
-  await connectToDatabase();
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  await Order.findByIdAndUpdate(id, { status: "completed" });
-  return NextResponse.json({ success: true });
+  try {
+    await connectToDatabase();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Order ID is required" }, { status: 400 });
+    }
+
+    await Order.findByIdAndUpdate(id, { status: "completed" });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error updating order:", error);
+    return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+  }
 }
