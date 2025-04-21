@@ -1,7 +1,7 @@
 import path from "path";
+import { NextConfig } from "next";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
@@ -9,7 +9,7 @@ const nextConfig = {
       "images.unsplash.com",
       "i.ebayimg.com",
     ],
-    unoptimized: true, // ✅ already correct
+    unoptimized: true,
   },
   async headers() {
     return [
@@ -27,7 +27,11 @@ const nextConfig = {
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
   },
   webpack(config) {
-    config.resolve.alias['@'] = path.resolve(__dirname); 
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "@": path.resolve(__dirname), // ✅ important: now Webpack understands @/
+    };
     return config;
   },
 };
