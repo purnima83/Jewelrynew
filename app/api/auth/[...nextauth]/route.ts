@@ -1,16 +1,14 @@
 import NextAuth from "next-auth";
-import type { AuthOptions } from "next-auth";  // ✅ Correct type finally
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
+import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
-import type { JWT } from "next-auth/jwt";
 
-const authOptions: AuthOptions = {
+const handlers = NextAuth({
   providers: [
-    CredentialsProvider({
+    Credentials({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -36,41 +34,35 @@ const authOptions: AuthOptions = {
         return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
-    GoogleProvider({
+    Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    GitHubProvider({
+    GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
-
   secret: process.env.NEXTAUTH_SECRET,
-
   session: {
     strategy: "jwt",
   },
-
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = (user as any).id;
-        token.role = (user as any).role || "user";
+        token.id = user.id;
+        (token as any).role = (user as any).role || "user";
       }
       return token;
     },
-
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.id);
-        (session.user as any).role = token.role ?? "user";
+        (session.user as any).role = (token as any).role ?? "user";
       }
       return session;
     },
   },
-};
+});
 
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+export const { GET, POST } = handlers;
