@@ -6,6 +6,9 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
+import type { JWT } from "next-auth/jwt";
+import type { Session, User as NextAuthUser } from "next-auth";
+
 const authOptions = {
   providers: [
     CredentialsProvider({
@@ -48,24 +51,23 @@ const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: NextAuthUser }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role || "user";
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = String(token.id);
         (session.user as any).role = token.role || "user";
       }
       return session;
-    },
+    }
   },
 };
 
-// ✅ Don't export authOptions! Only export handler
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
