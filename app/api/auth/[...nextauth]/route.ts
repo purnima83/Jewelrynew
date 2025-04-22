@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import { authHandler } from "@auth/core";  // ✅ Correct import
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -6,7 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -18,19 +18,15 @@ const handler = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing credentials");
         }
-
         await connectToDatabase();
         const user = await User.findOne({ email: credentials.email });
-
         if (!user) {
           throw new Error("No user found with this email");
         }
-
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) {
           throw new Error("Invalid password");
         }
-
         return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
@@ -44,11 +40,13 @@ const handler = NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = (user as any).id;
         token.role = (user as any).role || "user";
       }
       return token;
@@ -61,7 +59,6 @@ const handler = NextAuth({
       return session;
     },
   },
-});
+};
 
-// ✅ Correct export required by Next.js 15
-export { handler as GET, handler as POST };
+export const { GET, POST } = authHandler(authOptions);  // ✅ Correct final line
