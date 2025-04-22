@@ -1,4 +1,4 @@
-import { auth } from "next-auth"; // ✅ instead of NextAuth
+import { auth } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -6,8 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-// ✅ define options separately
-export const authOptions = {
+export const GET = auth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -35,12 +34,10 @@ export const authOptions = {
         return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
-
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
@@ -65,13 +62,11 @@ export const authOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.id);
-        session.user.role = token.role ?? "user";
+        (session.user as any).role = token.role ?? "user";
       }
       return session;
     },
   },
-};
+});
 
-// ✅ export a `GET` and `POST` handler separately using `auth`
-export const GET = auth(authOptions);
-export const POST = auth(authOptions);
+export const POST = GET;
