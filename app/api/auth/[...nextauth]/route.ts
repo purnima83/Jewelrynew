@@ -63,6 +63,6 @@ const authOptions = {
   },
 };
 
-const handler = NextAuth(authOptions);
+const handler = (req: any, res: any) => NextAuth(req, res, authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as default };
