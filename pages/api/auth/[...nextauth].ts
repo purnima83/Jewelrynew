@@ -1,3 +1,4 @@
+// /pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -63,6 +64,4 @@ const authOptions = {
   },
 };
 
-const handler = (req: any, res: any) => NextAuth(req, res, authOptions);
-
-export { handler as default };
+export default (req: any, res: any) => NextAuth(req, res, authOptions);
