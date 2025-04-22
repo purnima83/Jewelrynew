@@ -1,13 +1,13 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
+import type { JWT } from "next-auth/jwt";   // ✅ important
 
-// Define authOptions separately
-const authOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -52,7 +52,7 @@ const authOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: any }) {  // ✅ correct typing
       if (user) {
         token.id = (user as any).id;
         token.role = (user as any).role || "user";
@@ -60,7 +60,7 @@ const authOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: JWT }) {  // ✅ correct typing
       if (session.user) {
         session.user.id = String(token.id);
         (session.user as any).role = token.role ?? "user";
