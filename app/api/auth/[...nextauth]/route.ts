@@ -1,4 +1,4 @@
-import { authHandler } from "@auth/core";  // ✅ Correct import
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -20,13 +20,16 @@ export const authOptions = {
         }
         await connectToDatabase();
         const user = await User.findOne({ email: credentials.email });
+
         if (!user) {
           throw new Error("No user found with this email");
         }
+
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) {
           throw new Error("Invalid password");
         }
+
         return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
@@ -46,7 +49,7 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = (user as any).id;
+        token.id = user.id;
         token.role = (user as any).role || "user";
       }
       return token;
@@ -61,4 +64,6 @@ export const authOptions = {
   },
 };
 
-export const { GET, POST } = authHandler(authOptions);  // ✅ Correct final line
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
