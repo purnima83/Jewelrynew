@@ -1,4 +1,4 @@
-import { auth } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -65,8 +65,6 @@ const authOptions = {
   },
 };
 
-// ✅ Only export handlers (GET and POST):
-export const GET = auth(authOptions);
-export const POST = auth(authOptions);
+const handler = NextAuth(authOptions);
 
-// ❌ DO NOT export `authOptions` itself!
+export { handler as GET, handler as POST };
