@@ -1,14 +1,14 @@
 import NextAuth from "next-auth";
-import type { NextAuthConfig } from "next-auth";  // ✅ Correct type
+import type { AuthOptions } from "next-auth";  // ✅ Correct type finally
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
-import type { JWT } from "next-auth/jwt"; // ✅ token typing
+import type { JWT } from "next-auth/jwt";
 
-const config: NextAuthConfig = {
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -71,6 +71,6 @@ const config: NextAuthConfig = {
   },
 };
 
-const handler = NextAuth(config);
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
