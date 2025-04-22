@@ -6,7 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-const authOptions = {
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -44,27 +44,24 @@ const authOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role || "user";
+        token.role = (user as any).role || "user";
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role || "user";
+        session.user.id = String(token.id);
+        (session.user as any).role = token.role || "user";
       }
       return session;
     },
   },
-};
+});
 
-const handler = NextAuth(authOptions);
-
+// ✅ Correct export required by Next.js 15
 export { handler as GET, handler as POST };
