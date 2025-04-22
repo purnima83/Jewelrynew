@@ -1,4 +1,4 @@
-import { auth } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -6,7 +6,8 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-export const GET = auth({
+// Define authOptions separately
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -67,6 +68,8 @@ export const GET = auth({
       return session;
     },
   },
-});
+};
 
-export const POST = GET;
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
