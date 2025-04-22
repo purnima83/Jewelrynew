@@ -1,14 +1,14 @@
 import { auth } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-export const authOptions = {
+const authOptions = {
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -34,11 +34,11 @@ export const authOptions = {
         return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
-    Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    GitHub({
+    GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
@@ -48,23 +48,25 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
-        token.id = (user as any).id;
-        (token as any).role = (user as any).role || "user";
+        token.id = user.id;
+        token.role = user.role || "user";
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
-        session.user.id = String(token.id);
-        (session.user as any).role = (token as any).role ?? "user";
+        session.user.id = token.id;
+        session.user.role = token.role || "user";
       }
       return session;
     },
   },
 };
 
-// ✅ In NextAuth v5, you must export GET and POST manually like this:
+// ✅ Only export handlers (GET and POST):
 export const GET = auth(authOptions);
 export const POST = auth(authOptions);
+
+// ❌ DO NOT export `authOptions` itself!
