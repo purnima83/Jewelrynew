@@ -1,4 +1,3 @@
-// types/next-auth.d.ts
 import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
 
@@ -9,20 +8,19 @@ declare module "next-auth" {
       email?: string | null;
       name?: string | null;
       image?: string | null;
-      role?: string;  // ✅ Add role
+      role?: string;  
     };
   }
-
   interface User {
     id: string;
     email: string;
-    role?: string;  // ✅ Add role to user
+    role?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
-    role?: string;  // ✅ Add role to JWT token
+    role?: string;
   }
 }
