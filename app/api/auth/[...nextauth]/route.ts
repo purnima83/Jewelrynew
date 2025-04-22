@@ -6,7 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-export const authOptions = {
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -46,24 +46,24 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role || "user";
+        token.role = user.role || "user";
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
-        session.user.id = String(token.id);
-        (session.user as any).role = token.role || "user";
+        session.user.id = token.id;
+        session.user.role = token.role || "user";
       }
       return session;
     },
   },
 };
 
+// ✅ CORRECT EXPORTS for App Router
 const handler = NextAuth(authOptions);
 
-// ✅ Important: Export as GET and POST
 export { handler as GET, handler as POST };
