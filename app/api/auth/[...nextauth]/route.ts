@@ -1,13 +1,13 @@
-import NextAuth from "next-auth";
+import { auth } from "next-auth"; // ✅ instead of NextAuth
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt"; // ✅ import type for token
 
-const handler = NextAuth({
+// ✅ define options separately
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -32,11 +32,7 @@ const handler = NextAuth({
           throw new Error("Invalid password");
         }
 
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          role: user.role || "user",
-        };
+        return { id: user._id.toString(), email: user.email, role: user.role || "user" };
       },
     }),
 
@@ -61,7 +57,7 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = (user as any).id;
-        (token as JWT).role = (user as any).role || "user"; // ✅ Strong cast
+        token.role = (user as any).role || "user";
       }
       return token;
     },
@@ -69,15 +65,13 @@ const handler = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.id);
-
-        // ✅ Protect if role exists on token
-        if ("role" in token) {
-          (session.user as any).role = (token as any).role || "user";
-        }
+        session.user.role = token.role ?? "user";
       }
       return session;
     },
   },
-});
+};
 
-export { handler as GET, handler as POST };
+// ✅ export a `GET` and `POST` handler separately using `auth`
+export const GET = auth(authOptions);
+export const POST = auth(authOptions);
