@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import { auth } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
@@ -6,7 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-const handlers = NextAuth({
+export const authOptions = {
   providers: [
     Credentials({
       name: "Credentials",
@@ -50,7 +50,7 @@ const handlers = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = (user as any).id;
         (token as any).role = (user as any).role || "user";
       }
       return token;
@@ -63,6 +63,8 @@ const handlers = NextAuth({
       return session;
     },
   },
-});
+};
 
-export const { GET, POST } = handlers;
+// ✅ In NextAuth v5, you must export GET and POST manually like this:
+export const GET = auth(authOptions);
+export const POST = auth(authOptions);
