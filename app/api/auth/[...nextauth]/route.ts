@@ -6,7 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-export const authOptions = {
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -18,6 +18,7 @@ export const authOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing credentials");
         }
+
         await connectToDatabase();
         const user = await User.findOne({ email: credentials.email });
 
@@ -64,6 +65,7 @@ export const authOptions = {
   },
 };
 
+// ✅ Don't export authOptions! Only export handler
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
