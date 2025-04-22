@@ -5,6 +5,7 @@ import GitHubProvider from "next-auth/providers/github";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt"; // ✅ import type for token
 
 const handler = NextAuth({
   providers: [
@@ -31,7 +32,11 @@ const handler = NextAuth({
           throw new Error("Invalid password");
         }
 
-        return { id: user._id.toString(), email: user.email, role: user.role || "user" };
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          role: user.role || "user",
+        };
       },
     }),
 
@@ -56,15 +61,19 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = (user as any).id;
-        token.role = (user as any).role || "user";
+        (token as JWT).role = (user as any).role || "user"; // ✅ Strong cast
       }
       return token;
     },
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = String(token.id);   // ✅ force to string
-        session.user.role = token.role as string || "user"; // ✅ safely cast
+        session.user.id = String(token.id);
+
+        // ✅ Protect if role exists on token
+        if ("role" in token) {
+          (session.user as any).role = (token as any).role || "user";
+        }
       }
       return session;
     },
