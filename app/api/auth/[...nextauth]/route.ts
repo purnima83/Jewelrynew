@@ -6,7 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-const authOptions = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -44,9 +44,7 @@ const authOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -65,5 +63,7 @@ const authOptions = {
   },
 };
 
-// ⬇️⬇️ THIS IS THE IMPORTANT PART
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+
+// ✅ Important: Export as GET and POST
+export { handler as GET, handler as POST };
