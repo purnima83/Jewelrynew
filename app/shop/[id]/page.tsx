@@ -14,7 +14,9 @@ interface Product {
 }
 
 export default function ProductDetail() {
-  const { id } = useParams(); // ✅ Get product ID from URL
+  const params = useParams();
+  const id = params?.id as string; // ✅ Safely access id from params
+
   const { addToCart } = useCart(); // ✅ Use Cart Context
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ export default function ProductDetail() {
           <p className="text-gray-700 mt-2">{product.description}</p>
           <p className="text-xl font-semibold mt-4">${product.price}</p>
 
-          {/* ✅ Fix: Cast id to string when adding to cart */}
+          {/* ✅ Fix: Cast product.id to string for cart */}
           <button
             onClick={() =>
               addToCart({
