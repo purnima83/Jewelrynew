@@ -1,7 +1,7 @@
  import { connectToDatabase } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // ✅ Ensure NextAuth is configured
 
 // ✅ POST: Save order to MongoDB
