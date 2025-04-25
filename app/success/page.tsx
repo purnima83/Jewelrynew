@@ -11,7 +11,7 @@ import { useWindowSize } from "react-use";
 function SuccessPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const sessionId = searchParams.get("session_id");
+  const sessionId = searchParams?.get("session_id"); // ✅ Safe access
   const { clearCart } = useCart();
   const { data: session, status } = useSession();
   const [order, setOrder] = useState<any>(null);
@@ -97,7 +97,9 @@ function SuccessPageContent() {
                 </div>
                 <div className="flex-1">
                   <h4 className="font-medium">{item.title}</h4>
-                  <p className="text-sm text-gray-400">${item.price} x {item.quantity}</p>
+                  <p className="text-sm text-gray-400">
+                    ${item.price} x {item.quantity}
+                  </p>
                 </div>
               </div>
             ))}
