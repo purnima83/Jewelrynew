@@ -1,8 +1,9 @@
- import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth"; // ✅ Ensure NextAuth is configured
+import { authOptions } from "@/lib/auth";
+import { Session } from "next-auth"; // ✅ Import Session type
 
 // ✅ POST: Save order to MongoDB
 export async function POST(req: Request) {
@@ -40,7 +41,8 @@ export async function GET(_req: Request) {
   try {
     await connectToDatabase();
 
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as Session; // ✅ cast to Session
+
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
