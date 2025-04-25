@@ -2,9 +2,12 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/user";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import type { RouteContext } from "next";
 
-export async function DELETE(request: NextRequest, context: RouteContext<{ id: string }>) {
+// ✅ Correctly type the context parameter inline
+export async function DELETE(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   const { id } = context.params;
 
   if (!id) {
@@ -21,7 +24,10 @@ export async function DELETE(request: NextRequest, context: RouteContext<{ id: s
   }
 }
 
-export async function PATCH(request: NextRequest, context: RouteContext<{ id: string }>) {
+export async function PATCH(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   const { id } = context.params;
 
   if (!id) {
