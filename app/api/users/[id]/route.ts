@@ -3,19 +3,18 @@ import User from "@/models/user";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// ✅ Correctly type the context parameter inline
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
-
-  if (!id) {
-    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
-  }
-
+// ✅ DELETE: Delete user by ID (extracted from URL)
+export async function DELETE(request: NextRequest) {
   try {
     await connectToDatabase();
+
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop(); // extract the [id]
+
+    if (!id) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
     await User.findByIdAndDelete(id);
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (error) {
@@ -24,18 +23,18 @@ export async function DELETE(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
-
-  if (!id) {
-    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
-  }
-
+// ✅ PATCH: Update user role by ID
+export async function PATCH(request: NextRequest) {
   try {
     await connectToDatabase();
+
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop(); // extract the [id]
+
+    if (!id) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
     const { role } = await request.json();
     await User.findByIdAndUpdate(id, { role });
     return NextResponse.json({ message: "User role updated successfully" });
