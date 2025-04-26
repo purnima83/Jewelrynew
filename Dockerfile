@@ -1,14 +1,13 @@
 # ---- Stage 1: Build ----
 FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies separately first
 COPY package.json package-lock.json ./
 RUN npm ci --prefer-offline
 
-# Copy all project files
+# Copy full project
 COPY . .
 
 # Accept build-time environment variables
@@ -26,7 +25,6 @@ ARG EBAY_CLIENT_ID
 ARG EBAY_CLIENT_SECRET
 ARG OPENAI_API_KEY
 
-# Set environment variables for build-time
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
 ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
@@ -41,7 +39,7 @@ ENV EBAY_CLIENT_ID=$EBAY_CLIENT_ID
 ENV EBAY_CLIENT_SECRET=$EBAY_CLIENT_SECRET
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
-# Build the Next.js app
+# Build the app
 RUN npm run build
 
 # ---- Stage 2: Production Runner ----
@@ -49,21 +47,22 @@ FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Copy necessary build files
+# Copy only the necessary parts from builder
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+# (Optional) If you have next.config.ts or js, also copy
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
-# Set environment for production
 ENV NODE_ENV=production
 
-# Expose the port
+# Expose the port you run on (8080 in your case)
 EXPOSE 8080
 
-# Healthcheck for container (optional but good)
+# Healthcheck (optional but good)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --spider -q http://localhost:8080 || exit 1
 
-# Start the Next.js app
+# Start production server
 CMD ["npm", "start"]

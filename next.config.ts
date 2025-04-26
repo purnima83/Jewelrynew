@@ -1,14 +1,11 @@
 import path from "path";
-import { NextConfig } from "next";
+import type { NextConfig } from "next";
 
+/** @type {NextConfig} */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: [
-      "res.cloudinary.com",
-      "images.unsplash.com",
-      "i.ebayimg.com",
-    ],
+    domains: ["res.cloudinary.com", "images.unsplash.com", "i.ebayimg.com"],
     unoptimized: true,
   },
   async headers() {
@@ -30,7 +27,7 @@ const nextConfig: NextConfig = {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      "@": path.resolve(__dirname), // ✅ important: now Webpack understands @/
+      "@": path.resolve(__dirname),
     };
     return config;
   },

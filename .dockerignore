@@ -4,3 +4,8 @@ Dockerfile
 .dockerignore
 npm-debug.log
 .env
+.env.local
+.env.production
+*.tsbuildinfo
+README.md
+package-lock.json
