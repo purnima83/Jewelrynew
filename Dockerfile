@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install dependencies separately first
 COPY package.json ./
-RUN npm ci --prefer-offline
+RUN npm install --prefer-offline
 
 # Copy full project
 COPY . .
