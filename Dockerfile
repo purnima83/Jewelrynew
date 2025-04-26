@@ -4,7 +4,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Install dependencies separately first
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm ci --prefer-offline
 
 # Copy full project
