@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image"; // ✅ Import Image component
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "react-hot-toast";
@@ -36,11 +36,9 @@ export default function Navbar() {
   return (
     <nav className="bg-black border-b border-gold-500 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-
-        {/* ✅ Logo + Brand Title */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/logo.png"  // ✅ Your logo inside /public/
+            src="/logo.png"
             alt="Jewelry Store Logo"
             width={40}
             height={40}
@@ -60,8 +58,6 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-
-          {/* Cart */}
           <Link href="/cart" className="relative text-[#f6e05e] hover:text-[#ffe066] transition">
             🛒 Cart
             {session && cart.length > 0 && (
@@ -70,15 +66,11 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-
-          {/* Greeting */}
           {session?.user && (
             <span className="text-gold-500 ml-4 whitespace-nowrap">
               Hi, {getGreetingName()} 👋
             </span>
           )}
-
-          {/* Auth Buttons */}
           {session ? (
             <button
               onClick={handleLogout}
@@ -104,12 +96,26 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Updated Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-3xl text-gold-500"
+          className="md:hidden flex flex-col justify-center items-center w-10 h-10 relative"
         >
-          {menuOpen ? "✖" : "☰"}
+          <span
+            className={`bg-gold-500 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
+              menuOpen ? "rotate-45 translate-y-1.5" : "-translate-y-1.5"
+            }`}
+          />
+          <span
+            className={`bg-gold-500 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${
+              menuOpen ? "opacity-0" : "opacity-100"
+            }`}
+          />
+          <span
+            className={`bg-gold-500 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
+              menuOpen ? "-rotate-45 -translate-y-1.5" : "translate-y-1.5"
+            }`}
+          />
         </button>
       </div>
 
