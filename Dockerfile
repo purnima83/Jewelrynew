@@ -1,62 +1,57 @@
-name: Build and Deploy to Google Compute Engine
+# ---- Stage 1: Build ----
+FROM node:18-alpine AS builder
 
-on:
-  push:
-    branches:
-      - main
+WORKDIR /app
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+COPY package.json ./
+RUN npm install --prefer-offline
 
-    steps:
-      # Step 1: Checkout source
-      - name: Checkout repository
-        uses: actions/checkout@v3
+COPY . .
 
-      # Step 2: Authenticate with Google Cloud
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+# Build-time environment variables (optional if needed)
+ARG NEXT_PUBLIC_URL
+ARG NEXTAUTH_URL
+ARG NEXTAUTH_SECRET
+ARG MONGODB_URI
+ARG STRIPE_SECRET_KEY
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+ARG GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+ARG EBAY_CLIENT_ID
+ARG EBAY_CLIENT_SECRET
+ARG OPENAI_API_KEY
 
-      # Step 3: Configure Docker to push to GCR
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker --quiet
+# These are optional unless you need them during `next build`
+ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
+ENV NEXTAUTH_URL=$NEXTAUTH_URL
+ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+ENV MONGODB_URI=$MONGODB_URI
+ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
+ENV GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
+ENV GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
+ENV EBAY_CLIENT_ID=$EBAY_CLIENT_ID
+ENV EBAY_CLIENT_SECRET=$EBAY_CLIENT_SECRET
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
-      # Step 4: Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest .
+RUN npm run build
 
-      # Step 5: Push Docker image to GCR
-      - name: Push Docker image to GCR
-        run: |
-          docker push gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
+# ---- Stage 2: Production ----
+FROM node:18-alpine AS runner
 
-      # Step 6: SSH and deploy on GCP VM
-      - name: SSH and Deploy to Compute Engine
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VM_IP }}
-          username: ${{ secrets.VM_SSH_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          script: |
-            docker pull gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
-            docker stop jewelry-ecommerce || true
-            docker rm jewelry-ecommerce || true
-            docker run -d --name jewelry-ecommerce -p 8080:8080 \
-              -e NEXT_PUBLIC_URL="${{ secrets.NEXT_PUBLIC_URL }}" \
-              -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
-              -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
-              -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
-              -e STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
-              -e NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" \
-              -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
-              -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
-              -e GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}" \
-              -e GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" \
-              -e EBAY_CLIENT_ID="${{ secrets.EBAY_CLIENT_ID }}" \
-              -e EBAY_CLIENT_SECRET="${{ secrets.EBAY_CLIENT_SECRET }}" \
-              -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-              gcr.io/melodic-bazaar-455504-q5/jewelry-ecommerce:latest
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+EXPOSE 8080
+
+CMD ["npm", "run", "start", "--", "-p", "8080"]
