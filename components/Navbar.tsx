@@ -36,6 +36,7 @@ export default function Navbar() {
   return (
     <nav className="bg-black border-b border-gold-500 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        {/* Logo + Brand Title */}
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.png"
@@ -96,15 +97,15 @@ export default function Navbar() {
           )}
         </div>
 
-       {/* Mobile Menu Button */}
-	<button
-  onClick={() => setMenuOpen(!menuOpen)}
-  className="md:hidden text-3xl text-gold-500"
-  aria-label="Toggle Menu"
-	>
-  {/* Always render the icon immediately */}
-  <span>{menuOpen ? "✖" : "☰"}</span>
-	</button>
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden text-3xl text-gold-500"
+          aria-label="Toggle Menu"
+        >
+          <span>{menuOpen ? "✖" : "☰"}</span>
+        </button>
+      </div>
 
       {/* Mobile Dropdown */}
       {menuOpen && (
