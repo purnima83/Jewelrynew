@@ -1,4 +1,4 @@
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongooseConnect";
 import { getOrderModel } from "@/lib/orderModel"; // ✅ use new dynamic model
 import { NextResponse } from "next/server";
 

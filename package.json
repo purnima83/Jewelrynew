@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --no-lint",
+    "build": "next build",
     "start": "next start -p 8080",
-    "lint": "next lint"
+    "clean": "rm -rf .next"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.9.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",

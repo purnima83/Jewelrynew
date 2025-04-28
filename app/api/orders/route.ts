@@ -1,29 +1,25 @@
-import { connectToDatabase } from "@/lib/mongodb";
-import Order from "@/models/Order";
+import { getServerSession } from "next-auth/next"; // ✅ Correct
+import { authOptions } from "@/lib/auth"; // ✅
+import { connectToDatabase } from "@/lib/mongooseConnect"; // ✅
+import Order from "@/models/Order"; // ✅
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { Session } from "next-auth"; // ✅ Import Session type
+import { Session } from "next-auth"; // ✅ Needed for casting
 
-// ✅ POST: Save order to MongoDB
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
     const { userEmail, items, total, address } = await req.json();
 
-    // ✅ Check for missing fields
     if (!userEmail || !items || !total || !address) {
       console.error("🚨 Missing fields:", { userEmail, items, total, address });
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // ✅ Ensure items is an array
     if (!Array.isArray(items) || items.length === 0) {
       console.error("🚨 Invalid items array:", items);
       return NextResponse.json({ error: "Invalid items data" }, { status: 400 });
     }
 
-    // ✅ Save order to MongoDB
     const newOrder = new Order({ userEmail, items, total, address });
     await newOrder.save();
 
@@ -36,18 +32,16 @@ export async function POST(req: Request) {
   }
 }
 
-// ✅ GET: Fetch user orders
 export async function GET(_req: Request) {
   try {
     await connectToDatabase();
 
-    const session = (await getServerSession(authOptions)) as Session; // ✅ cast to Session
+    const session = (await getServerSession(authOptions)) as Session | null; // ✅ IMPORTANT FIX
 
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ Find orders for logged-in user
     const orders = await Order.find({ userEmail: session.user.email }).sort({ createdAt: -1 });
 
     return NextResponse.json({ orders }, { status: 200 });

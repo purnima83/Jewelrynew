@@ -1,4 +1,7 @@
-// No import needed here!
+// types/next-auth.d.ts
+
+import "next-auth";
+import "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
@@ -10,7 +13,6 @@ declare module "next-auth" {
       role?: string;
     };
   }
-
   interface User {
     id: string;
     email: string;

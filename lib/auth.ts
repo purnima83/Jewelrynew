@@ -1,59 +1,42 @@
-import { NextAuthOptions, Session } from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
+import type { NextAuthOptions } from "next-auth";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import GoogleProvider from "next-auth/providers/google";
-import { JWT } from "next-auth/jwt";
-
-declare module "next-auth" {
-  interface User {
-    id: string;
-  }
-
-  interface Session {
-    user: {
-      id: string;
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-    };
-  }
-}
+import GitHubProvider from "next-auth/providers/github";
+import clientPromise from "@/lib/mongodb";
 
 export const authOptions: NextAuthOptions = {
+  adapter: MongoDBAdapter(clientPromise),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: { params: { prompt: "select_account" } },
-    }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,   // ✅ cast properly
   },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async session({ session, token }: { session: Session; token: JWT }) {
-      if (session.user && token.sub) {
-        (session.user as any).id = token.sub; // ✅ Fix TypeScript issue
+    async session({ session, token }) {
+      if (token) {
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
+        token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
-    async redirect({ url }) {
-      console.log("🔄 Redirecting to:", url);
-      return url;
-    },
   },
-  pages: {
-    signIn: "/login",
-  },
-  debug: process.env.NEXTAUTH_DEBUG === "true",
 };

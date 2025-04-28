@@ -1,4 +1,4 @@
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongooseConnect";
 import Product from "@/models/product"; // Admin model
 
 export async function GET() {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongooseConnect";
 import { getOrderModel } from "@/lib/orderModel";
 import { getUserModel } from "@/lib/userModel";
 import { getProductModel } from "@/lib/productModel";

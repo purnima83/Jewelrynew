@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongooseConnect";
 import Order from "@/models/Order";
 
 console.log("Stripe Secret Key:", process.env.STRIPE_SECRET_KEY);
