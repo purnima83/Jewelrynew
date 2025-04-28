@@ -96,28 +96,15 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Updated Mobile Menu Button */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden flex flex-col justify-center items-center w-10 h-10 relative"
-        >
-          <span
-            className={`bg-gold-500 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
-              menuOpen ? "rotate-45 translate-y-1.5" : "-translate-y-1.5"
-            }`}
-          />
-          <span
-            className={`bg-gold-500 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${
-              menuOpen ? "opacity-0" : "opacity-100"
-            }`}
-          />
-          <span
-            className={`bg-gold-500 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
-              menuOpen ? "-rotate-45 -translate-y-1.5" : "translate-y-1.5"
-            }`}
-          />
-        </button>
-      </div>
+       {/* Mobile Menu Button */}
+	<button
+  onClick={() => setMenuOpen(!menuOpen)}
+  className="md:hidden text-3xl text-gold-500"
+  aria-label="Toggle Menu"
+	>
+  {/* Always render the icon immediately */}
+  <span>{menuOpen ? "✖" : "☰"}</span>
+	</button>
 
       {/* Mobile Dropdown */}
       {menuOpen && (
