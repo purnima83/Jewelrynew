@@ -44,7 +44,7 @@ export default function Navbar() {
             alt="Jewelry Store Logo"
             width={40}
             height={40}
-            className="rounded-full"
+            className="rounded-full object-cover"
           />
           <span className="text-2xl font-bold text-gold-500">Jewelry Store</span>
         </Link>
@@ -101,10 +101,12 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden flex items-center justify-center text-gold-500 text-2xl font-bold leading-none"
+          className="md:hidden flex flex-col justify-between w-8 h-6 focus:outline-none"
           aria-label="Toggle Menu"
         >
-          {menuOpen ? "✖" : "☰"}
+          <span className="block w-full h-0.5 bg-gold-500"></span>
+          <span className="block w-full h-0.5 bg-gold-500"></span>
+          <span className="block w-full h-0.5 bg-gold-500"></span>
         </button>
       </div>
 
