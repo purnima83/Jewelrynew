@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image"; // ✅ Import Image component
 import { useCart } from "@/context/CartContext";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "react-hot-toast";
@@ -36,9 +37,16 @@ export default function Navbar() {
     <nav className="bg-black border-b border-gold-500 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-        {/* Logo */}
-        <Link href="/" className="text-3xl font-bold text-gold-500">
-          Jewelry Store
+        {/* ✅ Logo + Brand Title */}
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/logo.png"  // ✅ Your logo inside /public/
+            alt="Jewelry Store Logo"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+          <span className="text-2xl font-bold text-gold-500">Jewelry Store</span>
         </Link>
 
         {/* Desktop Menu */}
@@ -112,13 +120,12 @@ export default function Navbar() {
             <Link
               key={link.label}
               href={link.href}
-              className="text-lg hover:text-[#ffe066] transition-colors"
               onClick={() => setMenuOpen(false)}
+              className="text-lg hover:text-[#ffe066] transition-colors"
             >
               {link.label}
             </Link>
           ))}
-
           <Link
             href="/cart"
             onClick={() => setMenuOpen(false)}
@@ -126,7 +133,6 @@ export default function Navbar() {
           >
             🛒 Cart
           </Link>
-
           {session ? (
             <>
               <span className="text-gold-500 text-center">Hi, {getGreetingName()} 👋</span>
