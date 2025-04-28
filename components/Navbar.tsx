@@ -38,17 +38,28 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo + Brand Title */}
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Jewelry Store Logo" width={40} height={40} className="rounded-full" />
+          <Image
+            src="/logo.png"
+            alt="Jewelry Store Logo"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           <span className="text-2xl font-bold text-gold-500">Jewelry Store</span>
         </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8 text-lg">
           {navLinks.map((link) => (
-            <Link key={link.label} href={link.href} className="text-[#f6e05e] hover:text-[#ffe066] transition-colors">
+            <Link
+              key={link.label}
+              href={link.href}
+              className="text-[#f6e05e] hover:text-[#ffe066] transition-colors"
+            >
               {link.label}
             </Link>
           ))}
+
           <Link href="/cart" className="relative text-[#f6e05e] hover:text-[#ffe066] transition">
             🛒 Cart
             {session && cart.length > 0 && (
@@ -57,9 +68,13 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
           {session?.user && (
-            <span className="text-gold-500 ml-4 whitespace-nowrap">Hi, {getGreetingName()} 👋</span>
+            <span className="text-gold-500 ml-4 whitespace-nowrap">
+              Hi, {getGreetingName()} 👋
+            </span>
           )}
+
           {session ? (
             <button
               onClick={handleLogout}
@@ -69,10 +84,16 @@ export default function Navbar() {
             </button>
           ) : (
             <div className="flex space-x-4">
-              <Link href="/login" className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition">
+              <Link
+                href="/login"
+                className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition"
+              >
                 Login
               </Link>
-              <Link href="/register" className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition">
+              <Link
+                href="/register"
+                className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition"
+              >
                 Register
               </Link>
             </div>
@@ -82,16 +103,38 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 rounded focus:outline-none"
+          className="md:hidden p-2"
           aria-label="Toggle Menu"
         >
-          {menuOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6 text-gold-500">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          {!menuOpen ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-gold-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6 text-gold-500">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-gold-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           )}
         </button>
@@ -99,13 +142,22 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       {menuOpen && (
-        <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4 text-[#f6e05e]">
+        <div className="md:hidden bg-black flex flex-col px-6 py-4 space-y-4">
           {navLinks.map((link) => (
-            <Link key={link.label} href={link.href} onClick={() => setMenuOpen(false)} className="text-lg hover:text-[#ffe066] transition-colors">
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="text-lg text-[#f6e05e] hover:text-yellow-400 transition-colors"
+            >
               {link.label}
             </Link>
           ))}
-          <Link href="/cart" onClick={() => setMenuOpen(false)} className="text-lg hover:text-[#ffe066] transition-colors">
+          <Link
+            href="/cart"
+            onClick={() => setMenuOpen(false)}
+            className="text-lg text-[#f6e05e] hover:text-yellow-400 transition-colors"
+          >
             🛒 Cart
           </Link>
           {session ? (
@@ -123,10 +175,18 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" onClick={() => setMenuOpen(false)} className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition text-center">
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="bg-gold-500 hover:bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg border border-yellow-400 transition text-center"
+              >
                 Login
               </Link>
-              <Link href="/register" onClick={() => setMenuOpen(false)} className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition text-center">
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className="bg-transparent border border-gold-500 text-[#f6e05e] hover:bg-gold-500 hover:text-black font-semibold px-5 py-2 rounded-lg transition text-center"
+              >
                 Register
               </Link>
             </>
