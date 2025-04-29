@@ -60,21 +60,24 @@ export default function Navbar() {
             </Link>
           ))}
 
+          {/* Cart */}
           <Link href="/cart" className="relative text-[#f6e05e] hover:text-[#ffe066] transition">
             🛒 Cart
-            {session && cart.length > 0 && (
+            {cart.length > 0 && (
               <span className="absolute -top-2 -right-3 bg-gold-500 text-black rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {cart.length}
               </span>
             )}
           </Link>
 
+          {/* Greeting */}
           {session?.user && (
             <span className="text-gold-500 ml-4 whitespace-nowrap">
               Hi, {getGreetingName()} 👋
             </span>
           )}
 
+          {/* Auth Buttons */}
           {session ? (
             <button
               onClick={handleLogout}
@@ -103,7 +106,7 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden flex items-center gap-2 bg-black p-2 rounded border border-gold-500"
+          className="md:hidden flex items-center gap-2 border border-gold-500 p-2 rounded bg-black"
           aria-label="Toggle Menu"
         >
           <svg
@@ -121,6 +124,11 @@ export default function Navbar() {
             />
           </svg>
           <span className="text-gold-500 text-sm">Menu</span>
+          {cart.length > 0 && (
+            <span className="ml-1 bg-gold-500 text-black rounded-full text-xs w-5 h-5 flex items-center justify-center">
+              {cart.length}
+            </span>
+          )}
         </button>
       </div>
 
@@ -142,7 +150,7 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
             className="text-lg text-[#f6e05e] hover:text-yellow-400 transition-colors"
           >
-            🛒 Cart
+            🛒 Cart {cart.length > 0 && `(${cart.length})`}
           </Link>
           {session ? (
             <>
