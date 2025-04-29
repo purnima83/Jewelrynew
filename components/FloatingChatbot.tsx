@@ -22,14 +22,6 @@ export default function FloatingChatbot() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem("chatbotMessages", JSON.stringify(messages));
     }
