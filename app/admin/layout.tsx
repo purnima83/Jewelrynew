@@ -1,24 +1,49 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+
+  // Handle touch swipe
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (touchStartX.current === null) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const distance = touchEndX - touchStartX.current;
+
+      if (distance > 50) {
+        // Swipe right ➡️ - Open Sidebar
+        setSidebarOpen(true);
+      } else if (distance < -50) {
+        // Swipe left ⬅️ - Close Sidebar
+        setSidebarOpen(false);
+      }
+      touchStartX.current = null;
+    };
+
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen bg-black text-white">
       {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-yellow-400 to-yellow-500 transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out md:static md:translate-x-0`}
-      >
-        <div className="h-full flex flex-col p-6">
-          <h2 className="text-2xl font-extrabold text-black mb-8 text-center">
-            Admin Panel
-          </h2>
-          <nav className="flex flex-col gap-6 text-lg font-semibold text-black">
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out bg-gradient-to-b from-yellow-400 to-yellow-500 shadow-lg md:relative md:translate-x-0 md:flex md:flex-col`}>
+        <div className="h-full p-8 flex flex-col">
+          <h2 className="text-3xl font-extrabold text-black mb-10 text-center">Admin Panel</h2>
+          <nav className="flex flex-col gap-6 text-lg text-black font-semibold">
             <Link href="/admin/dashboard" className="hover:text-white">📊 Dashboard</Link>
             <Link href="/admin/products" className="hover:text-white">🛍️ Products</Link>
             <Link href="/admin/orders" className="hover:text-white">📦 Orders</Link>
@@ -27,18 +52,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-y-auto bg-black text-white">
-        {/* Mobile Top Bar */}
-        <div className="md:hidden flex items-center justify-between bg-yellow-400 text-black p-4 shadow-lg">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-3xl">
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 overflow-x-hidden">
+        {/* Mobile Topbar */}
+        <div className="flex items-center justify-between md:hidden p-4 bg-yellow-400 text-black">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-3xl" aria-label="Toggle Menu">
             ☰
           </button>
-          <h1 className="text-xl font-bold">Admin Panel</h1>
+          <h1 className="text-lg font-bold">Admin Panel</h1>
         </div>
 
-        {/* Main page */}
-        <main className="flex-1 p-6 md:p-10">
+        {/* Actual Page Content */}
+        <main className="flex-1 p-6 sm:p-8 md:p-10">
           {children}
         </main>
       </div>
