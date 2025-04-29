@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="flex min-h-screen bg-black text-white overflow-x-auto">
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 transform ${
@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 w-full overflow-x-auto">
         {/* Mobile Topbar */}
         <div className="md:hidden flex items-center justify-between p-4 bg-black text-gold-500 border-b border-yellow-500">
           <button
@@ -69,7 +69,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 sm:p-8 md:p-10">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 md:p-8 w-full overflow-x-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
