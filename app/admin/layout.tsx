@@ -7,46 +7,37 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-yellow-400 to-yellow-500 p-6 shadow-lg transform ${
+      <div
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-yellow-400 to-yellow-500 transform ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out md:static md:translate-x-0 z-50`}
+        } transition-transform duration-300 ease-in-out md:static md:translate-x-0`}
       >
-        <h2 className="text-2xl font-extrabold mb-8 text-black text-center">
-          Admin Panel
-        </h2>
-        <nav className="flex flex-col gap-6 text-lg">
-          <Link href="/admin/dashboard" className="hover:text-black text-black font-semibold">
-            📊 Dashboard
-          </Link>
-          <Link href="/admin/products" className="hover:text-black text-black font-semibold">
-            🛍️ Products
-          </Link>
-          <Link href="/admin/orders" className="hover:text-black text-black font-semibold">
-            📦 Orders
-          </Link>
-          <Link href="/admin/users" className="hover:text-black text-black font-semibold">
-            👥 Users
-          </Link>
-        </nav>
-      </aside>
+        <div className="h-full flex flex-col p-6">
+          <h2 className="text-2xl font-extrabold text-black mb-8 text-center">
+            Admin Panel
+          </h2>
+          <nav className="flex flex-col gap-6 text-lg font-semibold text-black">
+            <Link href="/admin/dashboard" className="hover:text-white">📊 Dashboard</Link>
+            <Link href="/admin/products" className="hover:text-white">🛍️ Products</Link>
+            <Link href="/admin/orders" className="hover:text-white">📦 Orders</Link>
+            <Link href="/admin/users" className="hover:text-white">👥 Users</Link>
+          </nav>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Top bar for Mobile */}
-        <div className="md:hidden flex items-center justify-between p-4 bg-yellow-400 text-black">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-2xl font-bold"
-          >
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-y-auto bg-black text-white">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden flex items-center justify-between bg-yellow-400 text-black p-4 shadow-lg">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-3xl">
             ☰
           </button>
-          <h2 className="text-xl font-bold">Admin Panel</h2>
+          <h1 className="text-xl font-bold">Admin Panel</h1>
         </div>
 
-        {/* Page Content */}
+        {/* Main page */}
         <main className="flex-1 p-6 md:p-10">
           {children}
         </main>
