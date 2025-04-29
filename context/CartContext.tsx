@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { toast } from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -14,8 +15,8 @@ interface CartContextType {
   cart: Product[];
   mounted: boolean;
   addToCart: (product: Product) => void;
-  removeFromCart: (id: string) => void; // ✅ changed id to string
-  updateQuantity: (id: string, quantity: number) => void; // ✅ changed id to string
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -44,12 +45,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
+      let updatedCart;
       if (existingItem) {
-        return prevCart.map((item) =>
+        updatedCart = prevCart.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
+      } else {
+        updatedCart = [...prevCart, { ...product, quantity: 1 }];
       }
-      return [...prevCart, { ...product, quantity: 1 }];
+      toast.success("Product added to cart", { duration: 2000 });
+      return updatedCart;
     });
   };
 
